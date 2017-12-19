@@ -39,9 +39,13 @@ class GeocoderManager(context: Context) {
         return addressList
     }
 
-    fun getCurrentCity(latitude: Double, longitude: Double, maxResults: Int): String? {
+    fun getCurrentCity(latitude: Double, longitude: Double, maxResults: Int): String {
         fillDataBook(latitude, longitude, maxResults)
-        return addresses.get(0)?.locality
+        return if (addresses.get(0)?.locality != null) {
+            addresses.get(0)?.locality.toString()
+        } else {
+            addresses.get(0)?.subAdminArea.toString()
+        }
     }
 
     fun getCurrentState(latitude: Double, longitude: Double, maxResults: Int): String? {
