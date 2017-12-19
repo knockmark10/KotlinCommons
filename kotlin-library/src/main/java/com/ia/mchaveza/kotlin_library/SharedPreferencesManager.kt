@@ -10,8 +10,8 @@ import java.util.prefs.Preferences
  */
 class SharedPreferencesManager(context: Context) {
 
-    val mContext: Context
-    val sharedPreferences: SharedPreferences
+    private val mContext: Context
+    private val sharedPreferences: SharedPreferences
 
     init {
         mContext = context

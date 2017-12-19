@@ -12,7 +12,7 @@ import android.widget.Toast
  */
 class DialogBuilder(context: Context) {
 
-    val mContext = context
+    private val mContext = context
 
     fun buildOneButtonDialog(
             title: String,
