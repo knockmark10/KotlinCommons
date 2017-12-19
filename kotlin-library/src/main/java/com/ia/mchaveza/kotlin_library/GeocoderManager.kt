@@ -21,14 +21,22 @@ class GeocoderManager(context: Context) {
         addresses = ArrayList()
     }
 
-    fun fillDataBook(latitude: Double, longitude: Double, maxResults: Int) {
+    private fun fillDataBook(latitude: Double, longitude: Double, maxResults: Int) {
         addresses.clear()
         addresses = geocoder.getFromLocation(latitude, longitude, maxResults)
     }
 
-    fun getCurrentAddress(latitude: Double, longitude: Double, maxResults: Int): String? {
+    fun getCurrentAddress(latitude: Double, longitude: Double, maxResults: Int): MutableList<String> {
+        var addressList: MutableList<String> = ArrayList()
+        var address: String?
         fillDataBook(latitude, longitude, maxResults)
-        return addresses.get(0)?.getAddressLine(0)
+        for (i in 0..5) {
+            address = addresses[0]?.getAddressLine(i)
+            if (address != null) {
+                addressList.add(address)
+            }
+        }
+        return addressList
     }
 
     fun getCurrentCity(latitude: Double, longitude: Double, maxResults: Int): String? {
