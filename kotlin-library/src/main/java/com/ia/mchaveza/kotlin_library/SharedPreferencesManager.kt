@@ -18,7 +18,7 @@ class SharedPreferencesManager(context: Context) {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext)
     }
 
-    fun getStringPreference(stringPreference: String?) =
+    fun getStringPreference(stringPreference: String) =
             sharedPreferences.getString(stringPreference, null)
 
     fun getStringPreference(stringPreference: String, defaultValue: String) =
