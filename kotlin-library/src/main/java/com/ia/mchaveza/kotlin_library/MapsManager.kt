@@ -3,8 +3,12 @@ package com.ia.mchaveza.kotlin_library
 import android.content.Context
 import android.content.res.Resources
 import android.util.Log
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
+import com.google.android.gms.maps.model.Marker
 
 /**
  * Created by mchaveza on 02/01/2018.
@@ -12,6 +16,15 @@ import com.google.android.gms.maps.model.MapStyleOptions
 class MapsManager(private val mContext: Context) {
 
     private lateinit var mGoogleMap: GoogleMap
+    private lateinit var cameraPosition: CameraPosition
+
+    /**
+     * Before using this class, you should
+     * initialize your map to be changed
+     */
+    fun setGoogleMap(googleMap: GoogleMap){
+        mGoogleMap = googleMap
+    }
 
     /**
      * Choose between Aubergine, Dark, Night,
@@ -75,6 +88,36 @@ class MapsManager(private val mContext: Context) {
             Log.e("Error", "Can't find style");
         }
 
+        return mGoogleMap
+    }
+
+    /**
+     * Set the camera to desire position with custom zoom
+     */
+    fun setCurrentPosition(position: LatLng, zoom: Int): GoogleMap {
+        cameraPosition = CameraPosition.Builder().target(position).zoom(zoom.toFloat()).build()
+        mGoogleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+        return mGoogleMap
+    }
+
+    /**
+     * Centers the camera with a given marker list
+     */
+    fun centerCamera(listMarker: List<Marker>): GoogleMap {
+        var latitude = 0.0
+        var longitude = 0.0
+        for (marker in listMarker) {
+            latitude += marker.position.latitude
+            longitude += marker.position.longitude
+        }
+
+        if (listMarker.isNotEmpty()) {
+            latitude /= listMarker.size
+            longitude /= listMarker.size
+        }
+
+        cameraPosition = CameraPosition.Builder().target(LatLng(latitude, longitude)).zoom(11f).build()
+        mGoogleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
         return mGoogleMap
     }
 
