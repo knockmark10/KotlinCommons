@@ -3,6 +3,7 @@ package com.ia.mchaveza.kotlin_library
 import android.content.Context
 import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
+import android.support.annotation.DrawableRes
 import android.support.v4.content.ContextCompat
 import android.support.v4.graphics.drawable.DrawableCompat
 import android.widget.ImageView
@@ -22,7 +23,7 @@ class ImageUtils(private val mContext: Context) {
         return wrappedDrawable
     }
 
-    fun loadGif(splashView: ImageView, resource: File){
+    fun loadGif(splashView: ImageView, @DrawableRes resource: Int){
         val imageViewTarget = GlideDrawableImageViewTarget(splashView)
         Glide.with(mContext)
                 .load(resource)
