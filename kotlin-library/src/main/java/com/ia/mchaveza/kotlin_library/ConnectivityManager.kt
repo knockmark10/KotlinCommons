@@ -8,15 +8,15 @@ import android.telephony.TelephonyManager
  * Created by mchaveza on 19/12/2017.
  */
 
-class ConnectivityManager {
+class ConnectivityManager(private val mContext: Context) {
 
     /**
      * Get the network info
      * @param context
      * @return
      */
-    fun getNetworkInfo(context: Context): NetworkInfo? {
-        val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as android.net.ConnectivityManager
+    fun getNetworkInfo(): NetworkInfo? {
+        val cm = mContext.getSystemService(Context.CONNECTIVITY_SERVICE) as android.net.ConnectivityManager
         return cm.activeNetworkInfo
     }
 
@@ -25,8 +25,8 @@ class ConnectivityManager {
      * @param context
      * @return
      */
-    fun isConnected(context: Context): Boolean {
-        val info = getNetworkInfo(context)
+    fun isConnected(): Boolean {
+        val info = getNetworkInfo()
         return info != null && info.isConnected
     }
 
@@ -35,8 +35,8 @@ class ConnectivityManager {
      * @param context
      * @return
      */
-    fun isConnectedWifi(context: Context): Boolean {
-        val info = getNetworkInfo(context)
+    fun isConnectedWifi(): Boolean {
+        val info = getNetworkInfo()
         return info != null && info.isConnected && info.type == android.net.ConnectivityManager.TYPE_WIFI
     }
 
@@ -45,8 +45,8 @@ class ConnectivityManager {
      * @param context
      * @return
      */
-    fun isConnectedMobile(context: Context): Boolean {
-        val info = getNetworkInfo(context)
+    fun isConnectedMobile(): Boolean {
+        val info = getNetworkInfo()
         return info != null && info.isConnected && info.type == android.net.ConnectivityManager.TYPE_MOBILE
     }
 
@@ -55,8 +55,8 @@ class ConnectivityManager {
      * @param context
      * @return
      */
-    fun isConnectedFast(context: Context): Boolean {
-        val info = getNetworkInfo(context)
+    fun isConnectedFast(): Boolean {
+        val info = getNetworkInfo()
         return info != null && info.isConnected && isConnectionFast(info.type, info.subtype)
     }
 
