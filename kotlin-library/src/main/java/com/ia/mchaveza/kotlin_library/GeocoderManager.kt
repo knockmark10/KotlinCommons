@@ -9,14 +9,13 @@ import kotlin.collections.ArrayList
 /**
  * Created by mchaveza on 19/12/2017.
  */
-class GeocoderManager(context: Context) {
+class GeocoderManager(private val mContext: Context) {
 
-    private val mContext: Context
     private val geocoder: Geocoder
     private var addresses: MutableList<Address?>
+    private var unavailable = "No disponible"
 
     init {
-        mContext = context
         geocoder = Geocoder(mContext, Locale.getDefault())
         addresses = ArrayList()
     }
@@ -31,9 +30,11 @@ class GeocoderManager(context: Context) {
         var address: String?
         fillDataBook(latitude, longitude, maxResults)
         for (i in 0..5) {
-            address = addresses[0]?.getAddressLine(i)
-            if (address != null) {
-                addressList.add(address)
+            if (addresses.size > 0) {
+                address = addresses[0]?.getAddressLine(i)
+                if (address != null) {
+                    addressList.add(address)
+                }
             }
         }
         return addressList
@@ -41,31 +42,47 @@ class GeocoderManager(context: Context) {
 
     fun getCurrentCity(latitude: Double, longitude: Double, maxResults: Int): String {
         fillDataBook(latitude, longitude, maxResults)
-        return if (addresses.get(0)?.locality != null) {
-            addresses.get(0)?.locality.toString()
+        return if (addresses.size > 0 && addresses[0]?.locality != null) {
+            addresses[0]?.locality.toString()
         } else {
-            addresses.get(0)?.subAdminArea.toString()
+            addresses[0]?.subAdminArea.toString()
         }
     }
 
     fun getCurrentState(latitude: Double, longitude: Double, maxResults: Int): String? {
         fillDataBook(latitude, longitude, maxResults)
-        return addresses.get(0)?.adminArea
+        return if (addresses.size > 0 && addresses[0]?.adminArea != null) {
+            addresses[0]?.adminArea
+        } else {
+            unavailable
+        }
     }
 
     fun getCurrentCountry(latitude: Double, longitude: Double, maxResults: Int): String? {
         fillDataBook(latitude, longitude, maxResults)
-        return addresses.get(0)?.countryName
+        return if (addresses.size > 0 && addresses[0]?.countryName != null) {
+            addresses[0]?.countryName
+        } else {
+            unavailable
+        }
     }
 
     fun getPostalCode(latitude: Double, longitude: Double, maxResults: Int): String? {
         fillDataBook(latitude, longitude, maxResults)
-        return addresses.get(0)?.postalCode
+        return if (addresses.size > 0 && addresses[0]?.postalCode != null) {
+            addresses.get(0)?.postalCode
+        } else {
+            unavailable
+        }
     }
 
     fun knownName(latitude: Double, longitude: Double, maxResults: Int): String? {
         fillDataBook(latitude, longitude, maxResults)
-        return addresses.get(0)?.featureName
+        return if (addresses.size > 0 && addresses[0]?.featureName != null) {
+            addresses[0]?.featureName
+        } else {
+            unavailable
+        }
     }
 
 }
