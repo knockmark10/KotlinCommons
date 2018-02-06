@@ -3,7 +3,6 @@ package com.ia.mchaveza.kotlin_library
 import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
-import java.util.prefs.Preferences
 
 /**
  * Created by mchaveza on 19/12/2017.
@@ -38,5 +37,8 @@ class SharedPreferencesManager(context: Context) {
 
     fun setIntPreference(preferenceName: String, preference: Int) =
             sharedPreferences.edit().putInt(preferenceName, preference).apply()
+
+    fun clearPreferences(preferenceName: String) =
+            sharedPreferences.edit().remove(preferenceName).apply()
 
 }
