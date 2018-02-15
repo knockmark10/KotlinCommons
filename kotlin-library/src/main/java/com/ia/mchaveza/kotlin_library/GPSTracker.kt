@@ -3,7 +3,6 @@ package com.ia.mchaveza.kotlin_library
 import android.app.AlertDialog
 import android.app.Service
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.location.Location
 import android.location.LocationListener
@@ -11,35 +10,30 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.os.IBinder
 import android.provider.Settings
-
 import com.google.android.gms.maps.model.LatLng
 
 /**
  * Created by mchaveza on 19/12/2017.
  */
 
-class GPSTracker(
-        /**
-         * SYSTEM VARIABLES
-         */
-        private val mContext: Context, private val mListener: onLocationHasChanged) : Service(), LocationListener {
+class GPSTracker(private val mContext: Context, private var mListener: onLocationHasChanged?) : Service(), LocationListener {
 
     /**
      * INSTANCES OF CLASSES
      */
     private var location: Location? = null
-    protected var locationManager: LocationManager? = null
-    internal var isGPSEnabled = false
-    internal var isNetworkEnabled = false
-    internal var canGetLocation = false
-    internal var longitude: Double = 0.toDouble()
-    internal var latitude: Double = 0.toDouble()
+    private var locationManager: LocationManager? = null
+    private var isGPSEnabled = false
+    private var isNetworkEnabled = false
+    private var canGetLocation = false
+    private var longitude: Double = 0.toDouble()
+    private var latitude: Double = 0.toDouble()
 
     init {
         getLocation()
     }
 
-    fun getLocation(): Location? {
+    private fun getLocation(): Location? {
         try {
             locationManager = mContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
             isGPSEnabled = locationManager!!.isProviderEnabled(LocationManager.GPS_PROVIDER)
@@ -63,8 +57,7 @@ class GPSTracker(
                 if (locationManager != null) {
                     try {
                         location = locationManager!!.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
-                    } catch (se: SecurityException) {
-                    }
+                    } catch (se: SecurityException) {}
 
                     if (location != null) {
                         latitude = location!!.latitude
@@ -80,8 +73,7 @@ class GPSTracker(
                                 LocationManager.GPS_PROVIDER,
                                 MIN_TIME_BW_UPDATES,
                                 MIN_DISTANCE_CHANGE_FOR_UPDATES.toFloat(), this)
-                    } catch (se: SecurityException) {
-                    }
+                    } catch (se: SecurityException) {}
 
                     if (locationManager != null) {
                         try {
@@ -97,9 +89,7 @@ class GPSTracker(
                 }
             }
 
-        } catch (e: Exception) {
-        }
-
+        } catch (e: Exception) {}
         return location
     }
 
@@ -110,7 +100,6 @@ class GPSTracker(
                 locationManager = null
             } catch (se: SecurityException) {
             }
-
         }
     }
 
@@ -134,25 +123,30 @@ class GPSTracker(
 
     fun showSettingsAlert() {
         val alertDialog = AlertDialog.Builder(mContext)
-
         alertDialog.setTitle("GPS")
         alertDialog.setMessage("GPS is not enabled. Would you like to go to Settings?")
         alertDialog.setPositiveButton("Settings") { dialog, which ->
             val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
             mContext.startActivity(intent)
         }
-
         alertDialog.setNegativeButton("Cancel") { dialog, which -> dialog.cancel() }
         alertDialog.show()
+    }
 
+    fun unsubscribeLocationListener() {
+        mListener = null
+    }
+
+    fun subscribeLocationListener(listener: onLocationHasChanged) {
+        mListener = listener
     }
 
     override fun onLocationChanged(location: Location) {
         latitude = location.latitude
         longitude = location.longitude
 
-        if (locationManager != null) {
-            mListener.locationHasChanged(LatLng(latitude, longitude))
+        if (locationManager != null && mListener != null) {
+            mListener?.locationHasChanged(LatLng(latitude, longitude))
         }
     }
 
@@ -177,7 +171,6 @@ class GPSTracker(
     }
 
     companion object {
-
         private val MIN_DISTANCE_CHANGE_FOR_UPDATES: Long = 1
         private val MIN_TIME_BW_UPDATES = (1000 * 1).toLong()
     }
