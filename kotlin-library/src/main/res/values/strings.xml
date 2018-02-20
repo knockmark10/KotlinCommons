@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Kotlin-Library</string>
+    <string name="geocoder_endpoint">https://services.gisgraphy.com</string>
 </resources>
