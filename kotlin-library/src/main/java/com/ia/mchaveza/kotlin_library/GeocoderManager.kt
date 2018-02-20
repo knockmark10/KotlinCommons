@@ -17,6 +17,7 @@ class GeocoderManager(private val mContext: Context, private val geoCoderCallbac
     private var retrofit: Retrofit? = null
     private var interfaceAPI: InterfaceAPI? = null
     private var error: String? = null
+    private var geocoderMap: GeocoderResponse? = null
 
     fun getReverseGeocoder(latitude: Double, longitude: Double) {
         retrofit = Retrofit.Builder()
@@ -29,6 +30,7 @@ class GeocoderManager(private val mContext: Context, private val geoCoderCallbac
         interfaceAPI?.getGeocoderData("json", latitude, longitude)?.enqueue(object : Callback<GeocoderResponse?> {
             override fun onResponse(call: Call<GeocoderResponse?>?, response: Response<GeocoderResponse?>?) {
                 response?.body()?.let { item ->
+                    geocoderMap = item
                     geoCoderCallback.getData(item)
                 }
             }
@@ -43,60 +45,73 @@ class GeocoderManager(private val mContext: Context, private val geoCoderCallbac
 
     }
 
-    fun getStreetName(geocoderMap: GeocoderResponse): String {
+    fun getStreetName(): String {
         var street = "No disponible"
-        if (geocoderMap.result != null && geocoderMap.result.isNotEmpty()) {
-            street = geocoderMap.result[0]?.streetName.toString()
+        geocoderMap?.let {
+            if (it.result != null && it.result.isNotEmpty()) {
+                street = it.result[0]?.streetName.toString()
+            }
         }
         return street
     }
 
-
-    fun getZipCode(geocoderMap: GeocoderResponse): String {
+    fun getZipCode(): String {
         var zipCode = "No disponible"
-        if (geocoderMap.result != null && geocoderMap.result.isNotEmpty()) {
-            zipCode = geocoderMap.result[0]?.zipCode.toString()
+        geocoderMap?.let {
+            if (it.result != null && it.result.isNotEmpty()) {
+                zipCode = it.result[0]?.zipCode.toString()
+            }
         }
         return zipCode
     }
 
 
-    fun getCity(geocoderMap: GeocoderResponse): String {
+    fun getCity(): String {
         var city = "No disponible"
-        if (geocoderMap.result != null && geocoderMap.result.isNotEmpty()) {
-            city = geocoderMap.result[0]?.city.toString()
+        geocoderMap?.let {
+            if (it.result != null && it.result.isNotEmpty()) {
+                city = it.result[0]?.city.toString()
+            }
         }
         return city
     }
 
-    fun getState(geocoderMap: GeocoderResponse): String {
+    fun getState(): String {
         var state = "No disponible"
-        if (geocoderMap.result != null && geocoderMap.result.isNotEmpty()) {
-            state = geocoderMap.result[0]?.state.toString()
+        geocoderMap?.let {
+            if (it.result != null && it.result.isNotEmpty()) {
+                state = it.result[0]?.state.toString()
+            }
         }
         return state
     }
 
-    fun getCountryCode(geocoderMap: GeocoderResponse): String {
+    fun getCountryCode(): String {
         var countryCode = "No disponible"
-        if (geocoderMap.result != null && geocoderMap.result.isNotEmpty()) {
-            countryCode = geocoderMap.result[0]?.countryCode.toString()
+        geocoderMap?.let {
+            if (it.result != null && it.result.isNotEmpty()) {
+                countryCode = it.result[0]?.countryCode.toString()
+            }
         }
         return countryCode
     }
 
-    fun getFormatedFull(geocoderMap: GeocoderResponse): String {
+    fun getFormatedFull(): String {
         var formattedFull = "No disponible"
-        if (geocoderMap.result != null && geocoderMap.result.isNotEmpty()) {
-            formattedFull = geocoderMap.result[0]?.formatedFull.toString()
+        geocoderMap?.let {
+            if (it.result != null && it.result.isNotEmpty()) {
+                formattedFull = it.result[0]?.formatedFull.toString()
+            }
         }
         return formattedFull
     }
 
-    fun getFormatedPostal(geocoderMap: GeocoderResponse): String {
+    fun getFormatedPostal(): String {
         var formattedPostal = "No disponible"
-        if (geocoderMap.result != null && geocoderMap.result.isNotEmpty()) {
-            formattedPostal = geocoderMap.result[0]?.formatedPostal.toString()
+        geocoderMap?.let {
+            if (it.result != null && it.result.isNotEmpty()) {
+                formattedPostal = it.result[0]?.formatedPostal.toString()
+            }
         }
         return formattedPostal
     }
