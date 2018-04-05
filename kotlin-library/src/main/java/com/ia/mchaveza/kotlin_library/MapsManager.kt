@@ -30,7 +30,7 @@ class MapsManager(private val mContext: Context) {
      * Before using this class, you should
      * initialize your map to be changed
      */
-    fun setGoogleMap(googleMap: GoogleMap){
+    fun setGoogleMap(googleMap: GoogleMap) {
         mGoogleMap = googleMap
     }
 
@@ -39,11 +39,11 @@ class MapsManager(private val mContext: Context) {
      * Retro, Silver or default style for
      *           your map
      */
-    fun changeMapStyle(style: String): GoogleMap {
+    fun changeMapStyle(style: Style): GoogleMap {
         var success: Boolean
         try {
-            when (style) {
-                "Aubergine" -> {
+            when (style.style) {
+                Style.Aubergine.style -> {
                     success = mGoogleMap.setMapStyle(
                             MapStyleOptions.loadRawResourceStyle(
                                     mContext, R.raw.map_auberine))
@@ -51,7 +51,7 @@ class MapsManager(private val mContext: Context) {
                         Log.e("Error", "Style parsing failed")
                     }
                 }
-                "Dark" -> {
+                Style.Dark.style -> {
                     success = mGoogleMap.setMapStyle(
                             MapStyleOptions.loadRawResourceStyle(
                                     mContext, R.raw.map_dark))
@@ -59,7 +59,7 @@ class MapsManager(private val mContext: Context) {
                         Log.e("Error", "Style parsing failed")
                     }
                 }
-                "Night" -> {
+                Style.Night.style -> {
                     success = mGoogleMap.setMapStyle(
                             MapStyleOptions.loadRawResourceStyle(
                                     mContext, R.raw.map_night))
@@ -67,7 +67,7 @@ class MapsManager(private val mContext: Context) {
                         Log.e("Error", "Style parsing failed")
                     }
                 }
-                "Retro" -> {
+                Style.Retro.style -> {
                     success = mGoogleMap.setMapStyle(
                             MapStyleOptions.loadRawResourceStyle(
                                     mContext, R.raw.map_retro))
@@ -75,25 +75,25 @@ class MapsManager(private val mContext: Context) {
                         Log.e("Error", "Style parsing failed")
                     }
                 }
-                "Silver" -> {
+                Style.Silver.style -> {
                     success = mGoogleMap.setMapStyle(
                             MapStyleOptions.loadRawResourceStyle(
-                                    mContext, R.raw.map_silver));
+                                    mContext, R.raw.map_silver))
                     if (!success) {
-                        Log.e("Error", "Style parsing failed");
+                        Log.e("Error", "Style parsing failed")
                     }
                 }
-                "Default" -> {
+                Style.Default.style -> {
                     success = mGoogleMap.setMapStyle(
                             MapStyleOptions.loadRawResourceStyle(
-                                    mContext, R.raw.map_default));
+                                    mContext, R.raw.map_default))
                     if (!success) {
-                        Log.e("Error", "Style parsing failed");
+                        Log.e("Error", "Style parsing failed")
                     }
                 }
             }
         } catch (e: Resources.NotFoundException) {
-            Log.e("Error", "Can't find style");
+            Log.e("Error", "Can't find style")
         }
 
         return mGoogleMap
@@ -148,6 +148,15 @@ class MapsManager(private val mContext: Context) {
 
         customMarkerView.draw(canvas)
         return returnedBitmap
+    }
+
+    enum class Style(val style: String) {
+        Aubergine("Aubergine"),
+        Dark("Dark"),
+        Night("Night"),
+        Retro("Retro"),
+        Silver("Silver"),
+        Default("Default")
     }
 
 }

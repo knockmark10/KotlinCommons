@@ -62,5 +62,4 @@ class DialogBuilder(context: Context) {
         fun onDeny(dialog: DialogInterface, id: Int)
     }
 
-
 }
