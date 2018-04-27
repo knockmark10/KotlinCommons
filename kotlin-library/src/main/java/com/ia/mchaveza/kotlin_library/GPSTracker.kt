@@ -15,7 +15,7 @@ import java.io.IOException
  * Created by mchaveza on 19/12/2017.
  */
 
-class GPSTracker(private val mContext: Context, private var mListener: LocationHasChangedCallback?) : Service(), LocationListener {
+class GPSTracker(private val mContext: Context) : Service(), LocationListener {
 
     /**
      * INSTANCES OF CLASSES
@@ -27,9 +27,14 @@ class GPSTracker(private val mContext: Context, private var mListener: LocationH
     private var canGetLocation = false
     private var longitude: Double = 0.toDouble()
     private var latitude: Double = 0.toDouble()
+    private var mListener: LocationHasChangedCallback? = null
 
     init {
         getLocation()
+    }
+
+    fun setListener(listener: LocationHasChangedCallback) {
+        mListener = listener
     }
 
     private fun getLocation(): Location? {
@@ -137,10 +142,6 @@ class GPSTracker(private val mContext: Context, private var mListener: LocationH
 
     fun unsubscribeLocationListener() {
         mListener = null
-    }
-
-    fun subscribeLocationListener(listener: LocationHasChangedCallback) {
-        mListener = listener
     }
 
     override fun onLocationChanged(location: Location) {
