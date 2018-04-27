@@ -4,19 +4,18 @@ import android.app.AlertDialog
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.location.Location
-import android.location.LocationListener
-import android.location.LocationManager
+import android.location.*
 import android.os.Bundle
 import android.os.IBinder
 import android.provider.Settings
 import com.google.android.gms.maps.model.LatLng
+import java.io.IOException
 
 /**
  * Created by mchaveza on 19/12/2017.
  */
 
-class GPSTracker(private val mContext: Context, private var mListener: onLocationHasChanged?) : Service(), LocationListener {
+class GPSTracker(private val mContext: Context, private var mListener: LocationHasChangedCallback?) : Service(), LocationListener {
 
     /**
      * INSTANCES OF CLASSES
@@ -57,7 +56,8 @@ class GPSTracker(private val mContext: Context, private var mListener: onLocatio
                 if (locationManager != null) {
                     try {
                         location = locationManager!!.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
-                    } catch (se: SecurityException) {}
+                    } catch (se: SecurityException) {
+                    }
 
                     if (location != null) {
                         latitude = location!!.latitude
@@ -73,7 +73,8 @@ class GPSTracker(private val mContext: Context, private var mListener: onLocatio
                                 LocationManager.GPS_PROVIDER,
                                 MIN_TIME_BW_UPDATES,
                                 MIN_DISTANCE_CHANGE_FOR_UPDATES.toFloat(), this)
-                    } catch (se: SecurityException) {}
+                    } catch (se: SecurityException) {
+                    }
 
                     if (locationManager != null) {
                         try {
@@ -89,7 +90,8 @@ class GPSTracker(private val mContext: Context, private var mListener: onLocatio
                 }
             }
 
-        } catch (e: Exception) {}
+        } catch (e: Exception) {
+        }
         return location
     }
 
@@ -137,7 +139,7 @@ class GPSTracker(private val mContext: Context, private var mListener: onLocatio
         mListener = null
     }
 
-    fun subscribeLocationListener(listener: onLocationHasChanged) {
+    fun subscribeLocationListener(listener: LocationHasChangedCallback) {
         mListener = listener
     }
 
@@ -146,7 +148,48 @@ class GPSTracker(private val mContext: Context, private var mListener: onLocatio
         longitude = location.longitude
 
         if (locationManager != null && mListener != null) {
-            mListener?.locationHasChanged(LatLng(latitude, longitude))
+            mListener?.onLocationHasChanged(LatLng(latitude, longitude))
+            getPostalCode(location)
+        }
+    }
+
+    private fun getPostalCode(location: Location) {
+        val address = getAddress(location)
+        var postalCode: String
+
+        if (address != null) {
+            postalCode = if (address.postalCode != null) {
+                address.postalCode
+            } else {
+                val temporalString = address.getAddressLine(2)
+                val postalCodeSplit = temporalString.split(" ")
+                postalCodeSplit[0]
+            }
+            mListener?.onGetPostalCode(postalCode)
+        } else {
+            mListener?.onGetPostalCode("No disponible")
+        }
+
+    }
+
+    private fun getAddress(location: Location?): Address? {
+        if (location == null) {
+            return null
+        }
+
+        val geocoder = Geocoder(mContext)
+        val addresses: List<Address>?
+        try {
+            addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
+        } catch (e: IOException) {
+            e.printStackTrace()
+            return null
+        }
+
+        return if (addresses != null && !addresses.isEmpty()) {
+            addresses[0]
+        } else {
+            null
         }
     }
 
@@ -166,12 +209,13 @@ class GPSTracker(private val mContext: Context, private var mListener: onLocatio
         return null
     }
 
-    interface onLocationHasChanged {
-        fun locationHasChanged(newLocation: LatLng)
+    interface LocationHasChangedCallback {
+        fun onLocationHasChanged(newLocation: LatLng)
+        fun onGetPostalCode(postalCode: String)
     }
 
     companion object {
-        private val MIN_DISTANCE_CHANGE_FOR_UPDATES: Long = 1
-        private val MIN_TIME_BW_UPDATES = (1000 * 1).toLong()
+        private const val MIN_DISTANCE_CHANGE_FOR_UPDATES: Long = 1
+        private const val MIN_TIME_BW_UPDATES = (1000 * 1).toLong()
     }
 }
