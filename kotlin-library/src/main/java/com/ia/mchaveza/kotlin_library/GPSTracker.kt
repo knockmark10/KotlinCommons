@@ -33,10 +33,6 @@ class GPSTracker(private val mContext: Context) : Service(), LocationListener {
         getLocation()
     }
 
-    fun setListener(listener: LocationHasChangedCallback) {
-        mListener = listener
-    }
-
     private fun getLocation(): Location? {
         try {
             locationManager = mContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
@@ -140,7 +136,11 @@ class GPSTracker(private val mContext: Context) : Service(), LocationListener {
         alertDialog.show()
     }
 
-    fun unsubscribeLocationListener() {
+    fun startListener(listener: LocationHasChangedCallback) {
+        mListener = listener
+    }
+
+    fun stopListener() {
         mListener = null
     }
 
@@ -150,47 +150,6 @@ class GPSTracker(private val mContext: Context) : Service(), LocationListener {
 
         if (locationManager != null && mListener != null) {
             mListener?.onLocationHasChanged(LatLng(latitude, longitude))
-            getPostalCode(location)
-        }
-    }
-
-    private fun getPostalCode(location: Location) {
-        val address = getAddress(location)
-        var postalCode: String
-
-        if (address != null) {
-            postalCode = if (address.postalCode != null) {
-                address.postalCode
-            } else {
-                val temporalString = address.getAddressLine(2)
-                val postalCodeSplit = temporalString.split(" ")
-                postalCodeSplit[0]
-            }
-            mListener?.onGetPostalCode(postalCode)
-        } else {
-            mListener?.onGetPostalCode("No disponible")
-        }
-
-    }
-
-    private fun getAddress(location: Location?): Address? {
-        if (location == null) {
-            return null
-        }
-
-        val geocoder = Geocoder(mContext)
-        val addresses: List<Address>?
-        try {
-            addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
-        } catch (e: IOException) {
-            e.printStackTrace()
-            return null
-        }
-
-        return if (addresses != null && !addresses.isEmpty()) {
-            addresses[0]
-        } else {
-            null
         }
     }
 
@@ -212,7 +171,6 @@ class GPSTracker(private val mContext: Context) : Service(), LocationListener {
 
     interface LocationHasChangedCallback {
         fun onLocationHasChanged(newLocation: LatLng)
-        fun onGetPostalCode(postalCode: String)
     }
 
     companion object {
