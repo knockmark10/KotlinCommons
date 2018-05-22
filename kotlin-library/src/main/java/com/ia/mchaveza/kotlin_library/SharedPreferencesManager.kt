@@ -1,21 +1,14 @@
 package com.ia.mchaveza.kotlin_library
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.preference.PreferenceManager
 
 /**
  * Created by mchaveza on 19/12/2017.
  */
-class SharedPreferencesManager(context: Context) {
+class SharedPreferencesManager(mContext: Context) {
 
-    private val mContext: Context
-    private val sharedPreferences: SharedPreferences
-
-    init {
-        mContext = context
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext)
-    }
+    private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext)
 
     fun getStringPreference(stringPreference: String) =
             sharedPreferences.getString(stringPreference, null)
