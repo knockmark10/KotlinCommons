@@ -1,6 +1,5 @@
 package com.ia.mchaveza.kotlin_library
 
-import android.Manifest
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -9,7 +8,6 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
 import android.os.IBinder
-import android.support.v4.app.ActivityCompat
 import com.google.android.gms.maps.model.LatLng
 
 /**
@@ -25,7 +23,6 @@ class GPSTracker(private val mContext: Context) : Service(), LocationListener {
     private var locationManager: LocationManager? = null
     private var isGPSEnabled = false
     private var isNetworkEnabled = false
-    private var canGetLocation = false
     private var longitude: Double = 0.toDouble()
     private var latitude: Double = 0.toDouble()
     private var mListener: LocationHasChangedCallback? = null
@@ -48,7 +45,6 @@ class GPSTracker(private val mContext: Context) : Service(), LocationListener {
             isNetworkEnabled = locationManager?.isProviderEnabled(LocationManager.NETWORK_PROVIDER) ?: false
 
             if (isGPSEnabled && isNetworkEnabled) {
-                this.canGetLocation = true
                 if (isNetworkEnabled) {
                     try {
                         locationManager?.requestLocationUpdates(
@@ -70,8 +66,6 @@ class GPSTracker(private val mContext: Context) : Service(), LocationListener {
                         longitude = location!!.longitude
                     }
                 }
-            } else {
-                this.canGetLocation = false
             }
 
             if (isGPSEnabled) {
@@ -140,9 +134,9 @@ class GPSTracker(private val mContext: Context) : Service(), LocationListener {
      * It checks if location is available at a specific moment
      * @return true if available
      */
-    fun canGetLocation(): Boolean {
-        return this.canGetLocation
-    }
+    fun canGetLocation(): Boolean =
+            locationManager?.isProviderEnabled(LocationManager.GPS_PROVIDER) ?: false ||
+                    locationManager?.isProviderEnabled(LocationManager.NETWORK_PROVIDER) ?: false
 
     /**
      * Start receiving updates from location service
