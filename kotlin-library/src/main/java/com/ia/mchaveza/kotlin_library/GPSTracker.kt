@@ -1,15 +1,16 @@
 package com.ia.mchaveza.kotlin_library
 
-import android.app.AlertDialog
+import android.Manifest
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.location.*
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
 import android.os.Bundle
 import android.os.IBinder
-import android.provider.Settings
+import android.support.v4.app.ActivityCompat
 import com.google.android.gms.maps.model.LatLng
-import java.io.IOException
 
 /**
  * Created by mchaveza on 19/12/2017.
@@ -36,27 +37,24 @@ class GPSTracker(private val mContext: Context) : Service(), LocationListener {
     private fun getLocation(): Location? {
         try {
             locationManager = mContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-            isGPSEnabled = locationManager!!.isProviderEnabled(LocationManager.GPS_PROVIDER)
-            isNetworkEnabled = locationManager!!.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+            isGPSEnabled = locationManager?.isProviderEnabled(LocationManager.GPS_PROVIDER) ?: false
+            isNetworkEnabled = locationManager?.isProviderEnabled(LocationManager.NETWORK_PROVIDER) ?: false
 
-            if (!isGPSEnabled && !isNetworkEnabled) {
-
-            } else {
+            if (isGPSEnabled && isNetworkEnabled) {
                 this.canGetLocation = true
                 if (isNetworkEnabled) {
                     try {
-                        locationManager!!.requestLocationUpdates(
+                        locationManager?.requestLocationUpdates(
                                 LocationManager.NETWORK_PROVIDER,
                                 MIN_TIME_BW_UPDATES,
                                 MIN_DISTANCE_CHANGE_FOR_UPDATES.toFloat(), this)
                     } catch (se: SecurityException) {
                     }
-
                 }
 
                 if (locationManager != null) {
                     try {
-                        location = locationManager!!.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+                        location = locationManager?.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
                     } catch (se: SecurityException) {
                     }
 
@@ -65,12 +63,14 @@ class GPSTracker(private val mContext: Context) : Service(), LocationListener {
                         longitude = location!!.longitude
                     }
                 }
+            } else {
+                this.canGetLocation = false
             }
 
             if (isGPSEnabled) {
                 if (location == null) {
                     try {
-                        locationManager!!.requestLocationUpdates(
+                        locationManager?.requestLocationUpdates(
                                 LocationManager.GPS_PROVIDER,
                                 MIN_TIME_BW_UPDATES,
                                 MIN_DISTANCE_CHANGE_FOR_UPDATES.toFloat(), this)
@@ -79,14 +79,12 @@ class GPSTracker(private val mContext: Context) : Service(), LocationListener {
 
                     if (locationManager != null) {
                         try {
-                            location = locationManager!!.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+                            location = locationManager?.getLastKnownLocation(LocationManager.GPS_PROVIDER)
                         } catch (se: SecurityException) {
                         }
 
-                        if (location != null) {
-                            latitude = location!!.latitude
-                            longitude = location!!.longitude
-                        }
+                        latitude = location?.latitude ?: 0.0
+                        longitude = location?.longitude ?: 0.0
                     }
                 }
             }
@@ -108,32 +106,20 @@ class GPSTracker(private val mContext: Context) : Service(), LocationListener {
 
     fun getLatitude(): Double {
         if (location != null) {
-            latitude = location!!.latitude
+            latitude = location?.latitude ?: 0.0
         }
         return latitude
     }
 
     fun getLongitude(): Double {
         if (location != null) {
-            longitude = location!!.longitude
+            longitude = location?.longitude ?: 0.0
         }
         return longitude
     }
 
     fun canGetLocation(): Boolean {
         return this.canGetLocation
-    }
-
-    fun showSettingsAlert() {
-        val alertDialog = AlertDialog.Builder(mContext)
-        alertDialog.setTitle("GPS")
-        alertDialog.setMessage("GPS is not enabled. Would you like to go to Settings?")
-        alertDialog.setPositiveButton("Settings") { dialog, which ->
-            val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-            mContext.startActivity(intent)
-        }
-        alertDialog.setNegativeButton("Cancel") { dialog, which -> dialog.cancel() }
-        alertDialog.show()
     }
 
     fun startListener(listener: LocationHasChangedCallback) {
