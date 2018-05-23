@@ -34,6 +34,13 @@ class GPSTracker(private val mContext: Context) : Service(), LocationListener {
         getLocation()
     }
 
+    /**
+     * This functions tries to get user's location
+     * if it's available. Otherwise it handles errors
+     * to avoid collapsing
+     *
+     * It starts when this class is instantiated
+     */
     private fun getLocation(): Location? {
         try {
             locationManager = mContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
@@ -94,16 +101,23 @@ class GPSTracker(private val mContext: Context) : Service(), LocationListener {
         return location
     }
 
+    /**
+     * Stops receiving updates from location services
+     */
     fun stopUsingGPS() {
         if (locationManager != null) {
             try {
-                locationManager!!.removeUpdates(this@GPSTracker)
+                locationManager?.removeUpdates(this@GPSTracker)
                 locationManager = null
             } catch (se: SecurityException) {
             }
         }
     }
 
+    /**
+     * Get the last known latitude from user's location
+     * @return latitude
+     */
     fun getLatitude(): Double {
         if (location != null) {
             latitude = location?.latitude ?: 0.0
@@ -111,6 +125,10 @@ class GPSTracker(private val mContext: Context) : Service(), LocationListener {
         return latitude
     }
 
+    /**
+     * Get the last known longitude from user's location
+     * @return latitude
+     */
     fun getLongitude(): Double {
         if (location != null) {
             longitude = location?.longitude ?: 0.0
@@ -118,18 +136,32 @@ class GPSTracker(private val mContext: Context) : Service(), LocationListener {
         return longitude
     }
 
+    /**
+     * It checks if location is available at a specific moment
+     * @return true if available
+     */
     fun canGetLocation(): Boolean {
         return this.canGetLocation
     }
 
+    /**
+     * Start receiving updates from location service
+     */
     fun startListener(listener: LocationHasChangedCallback) {
         mListener = listener
     }
 
+    /**
+     * Stop receiving updates from location services
+     */
     fun stopListener() {
         mListener = null
     }
 
+    /**
+     * Once our service is up and running, we receive updates from
+     * out location service.
+     */
     override fun onLocationChanged(location: Location) {
         latitude = location.latitude
         longitude = location.longitude
