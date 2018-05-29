@@ -19,11 +19,9 @@ class GeocoderManager(private val mContext: Context) {
 
         val addresses = geoCoder.getFromLocation(lat, lon, 5)
         if (addresses != null && addresses.size > 0) {
-            for (i in addresses.indices) {
-                address = addresses[i]
-                if (address?.postalCode != null) {
-                    zipCode = address.postalCode
-                    break
+            addresses.forEach {
+                if (it.postalCode != null) {
+                    zipCode = it.postalCode
                 }
             }
             return zipCode
