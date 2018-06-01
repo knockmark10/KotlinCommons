@@ -54,3 +54,12 @@ fun View.gone() {
 fun ViewGroup.inflate(layoutRes: Int): View =
         LayoutInflater.from(context).inflate(layoutRes, this, false)
 
+fun View.setDrawableBackground(drawableResId: Int) {
+    this.background = ContextCompat.getDrawable(this.context, drawableResId)
+
+}
+
+fun View.setColorBackground(colorResId: Int) {
+    this.setBackgroundColor(ContextCompat.getColor(this.context, colorResId))
+}
+
