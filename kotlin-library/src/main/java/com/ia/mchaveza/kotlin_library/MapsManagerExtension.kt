@@ -5,10 +5,7 @@ import android.content.res.Resources
 import android.util.Log
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MapStyleOptions
-import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.*
 
 /**
  * Choose between Aubergine, Dark, Night,
@@ -99,4 +96,19 @@ fun GoogleMap.centerCamera(listMarker: List<Marker>, zoom: Float) {
 
     val cameraPosition = CameraPosition.Builder().target(LatLng(latitude, longitude)).zoom(zoom).build()
     this.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+}
+
+fun GoogleMap.centerMarkers(context: Context, latLngList: MutableList<LatLng>) {
+    val latLngBounds = LatLngBounds.Builder()
+    latLngList.forEach {
+        latLngBounds.include(LatLng(0.0, 0.0))
+    }
+
+    val bounds = latLngBounds.build()
+    val width = context.resources.displayMetrics.widthPixels
+    val height = context.resources.displayMetrics.heightPixels
+    val padding = (width * 0.10).toInt()
+
+    val cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, width, height, padding)
+    this.animateCamera(cameraUpdate)
 }

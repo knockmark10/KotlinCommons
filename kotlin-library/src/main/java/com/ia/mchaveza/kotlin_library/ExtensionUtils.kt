@@ -62,4 +62,3 @@ fun View.setDrawableBackground(drawableResId: Int) {
 fun View.setColorBackground(colorResId: Int) {
     this.setBackgroundColor(ContextCompat.getColor(this.context, colorResId))
 }
-

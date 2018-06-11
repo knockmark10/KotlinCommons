@@ -13,7 +13,7 @@ import com.google.android.gms.maps.model.LatLng
 /**
  * Created by mchaveza on 19/12/2017.
  */
-
+@Deprecated("Use LocationServices from this library instead")
 class GPSTracker(private val mContext: Context) : Service(), LocationListener {
 
     /**
