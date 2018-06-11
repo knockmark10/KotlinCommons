@@ -2,6 +2,7 @@ package com.ia.mchaveza.kotlin_library
 
 import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Looper
@@ -11,7 +12,7 @@ import com.google.android.gms.location.*
 import com.google.android.gms.location.LocationServices.getFusedLocationProviderClient
 
 
-class TrackingManager(private val mActivity: Activity) {
+class TrackingManager(private val mActivity: Context) {
 
     private val mLocationRequest by lazy { LocationRequest() }
     private var userLatitude: Double = 0.0
@@ -25,7 +26,7 @@ class TrackingManager(private val mActivity: Activity) {
         const val PERMISSIONS_REQUEST_LOCATION = 99
     }
 
-    fun startLocationUpdates(listener: LocationHasChangedCallback, updateInterval: Long?, fastestInterval: Long?) {
+    fun startLocationUpdates(listener: LocationHasChangedCallback, updateInterval: Long? = null, fastestInterval: Long? = null) {
         //Set the listener to start receiving updates
         mListener = listener
 
@@ -82,7 +83,7 @@ class TrackingManager(private val mActivity: Activity) {
     private fun checkLocationPermissions(): Boolean =
             ContextCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
 
-    private fun requestPermissions() {
+    private fun requestPermissions(activity: Activity) {
         ActivityCompat.requestPermissions(
                 mActivity,
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
