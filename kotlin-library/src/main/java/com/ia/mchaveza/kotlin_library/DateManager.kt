@@ -94,4 +94,8 @@ object DateManager {
 
     fun getCurrentDateInMillis() = System.currentTimeMillis()
 
+    fun getCurrentHour(): Int = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+
+
+
 }

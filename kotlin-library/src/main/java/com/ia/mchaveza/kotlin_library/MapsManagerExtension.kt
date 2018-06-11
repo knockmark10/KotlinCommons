@@ -71,6 +71,23 @@ fun GoogleMap.setMapStyle(mContext: Context, style: MapsManager.Style) {
 }
 
 /**
+ * Sets the map style according to the daylight
+ */
+fun GoogleMap.setDaylightStyle(mContext: Context) {
+    when {
+        DateManager.getCurrentHour() in 9..11 -> {
+            this.setMapStyle(mContext, MapsManager.Style.Default)
+        }
+        DateManager.getCurrentHour() in 12..18 -> {
+            this.setMapStyle(mContext, MapsManager.Style.Retro)
+        }
+        else -> {
+            this.setMapStyle(mContext, MapsManager.Style.Aubergine)
+        }
+    }
+}
+
+/**
  * Set the camera to desire position with custom zoom
  */
 fun GoogleMap.setCurrentPosition(position: LatLng, zoom: Int) {
