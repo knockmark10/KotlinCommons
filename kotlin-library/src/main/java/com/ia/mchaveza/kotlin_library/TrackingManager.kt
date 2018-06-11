@@ -59,7 +59,7 @@ class TrackingManager(private val mActivity: Context) {
         }
     }
 
-    fun getLastLocation() {
+    fun getLastLocation(activity: Activity) {
         if (checkLocationPermissions()) {
             val locationClient = getFusedLocationProviderClient(mActivity)
             locationClient.lastLocation
@@ -72,7 +72,7 @@ class TrackingManager(private val mActivity: Context) {
                         mListener?.onLocationHasChangedError(it)
                     }
         } else {
-            requestPermissions()
+            requestPermissions(activity)
         }
     }
 
@@ -85,7 +85,7 @@ class TrackingManager(private val mActivity: Context) {
 
     private fun requestPermissions(activity: Activity) {
         ActivityCompat.requestPermissions(
-                mActivity,
+                activity,
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                 PERMISSIONS_REQUEST_LOCATION
         )
