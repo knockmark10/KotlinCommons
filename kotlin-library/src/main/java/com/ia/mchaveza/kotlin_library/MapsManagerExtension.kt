@@ -75,14 +75,20 @@ fun GoogleMap.setMapStyle(mContext: Context, style: MapsManager.Style) {
  */
 fun GoogleMap.setDaylightStyle(mContext: Context) {
     when {
-        DateManager.getCurrentHour() in 9..11 -> {
+        DateManager.getCurrentHour() in 8..11 -> {
             this.setMapStyle(mContext, MapsManager.Style.Default)
         }
         DateManager.getCurrentHour() in 12..18 -> {
             this.setMapStyle(mContext, MapsManager.Style.Retro)
         }
-        else -> {
+        DateManager.getCurrentHour() in 19..21 -> {
             this.setMapStyle(mContext, MapsManager.Style.Aubergine)
+        }
+        DateManager.getCurrentHour() in 22..23 -> {
+            this.setMapStyle(mContext, MapsManager.Style.Night)
+        }
+        else -> {
+            this.setMapStyle(mContext, MapsManager.Style.Dark)
         }
     }
 }
