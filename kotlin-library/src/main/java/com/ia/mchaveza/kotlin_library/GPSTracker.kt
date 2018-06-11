@@ -13,7 +13,7 @@ import com.google.android.gms.maps.model.LatLng
 /**
  * Created by mchaveza on 19/12/2017.
  */
-@Deprecated("Use LocationServices from this library instead")
+@Deprecated("Use TrackingManager from this library instead")
 class GPSTracker(private val mContext: Context) : Service(), LocationListener {
 
     /**
@@ -38,6 +38,7 @@ class GPSTracker(private val mContext: Context) : Service(), LocationListener {
      *
      * It starts when this class is instantiated
      */
+    @Deprecated("Use TrackingManager methods from this library instead")
     private fun getLocation(): Location? {
         try {
             locationManager = mContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
@@ -98,6 +99,7 @@ class GPSTracker(private val mContext: Context) : Service(), LocationListener {
     /**
      * Stops receiving updates from location services
      */
+    @Deprecated("Use TrackingManager methods from this library instead")
     fun stopUsingGPS() {
         if (locationManager != null) {
             try {
@@ -112,6 +114,7 @@ class GPSTracker(private val mContext: Context) : Service(), LocationListener {
      * Get the last known latitude from user's location
      * @return latitude
      */
+    @Deprecated("Use TrackingManager methods from this library instead")
     fun getLatitude(): Double {
         if (location != null) {
             latitude = location?.latitude ?: 0.0
@@ -123,6 +126,7 @@ class GPSTracker(private val mContext: Context) : Service(), LocationListener {
      * Get the last known longitude from user's location
      * @return latitude
      */
+    @Deprecated("Use TrackingManager methods from this library instead")
     fun getLongitude(): Double {
         if (location != null) {
             longitude = location?.longitude ?: 0.0
@@ -134,6 +138,7 @@ class GPSTracker(private val mContext: Context) : Service(), LocationListener {
      * It checks if location is available at a specific moment
      * @return true if available
      */
+    @Deprecated("Use TrackingManager methods from this library instead")
     fun canGetLocation(): Boolean =
             locationManager?.isProviderEnabled(LocationManager.GPS_PROVIDER) ?: false ||
                     locationManager?.isProviderEnabled(LocationManager.NETWORK_PROVIDER) ?: false
@@ -141,6 +146,7 @@ class GPSTracker(private val mContext: Context) : Service(), LocationListener {
     /**
      * Start receiving updates from location service
      */
+    @Deprecated("Use TrackingManager methods from this library instead")
     fun startListener(listener: LocationHasChangedCallback) {
         mListener = listener
     }
@@ -148,6 +154,7 @@ class GPSTracker(private val mContext: Context) : Service(), LocationListener {
     /**
      * Stop receiving updates from location services
      */
+    @Deprecated("Use LocationServices methods from this library instead")
     fun stopListener() {
         mListener = null
     }

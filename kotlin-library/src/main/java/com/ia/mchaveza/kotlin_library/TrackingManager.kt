@@ -8,31 +8,31 @@ import android.os.Looper
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import com.google.android.gms.location.*
-import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationServices.getFusedLocationProviderClient
 
 
-class LocationServices(private val mActivity: Activity, private val mListener: LocationHasChangedCallback) {
+class TrackingManager(private val mActivity: Activity) {
 
     private val mLocationRequest by lazy { LocationRequest() }
     private var userLatitude: Double = 0.0
     private var userLongitude: Double = 0.0
 
+    private var mListener: LocationHasChangedCallback? = null
+
     companion object {
-        const val UPDATE_INTERVAL = (5 * 1000).toLong()
-        const val FASTEST_INTERVAL = (1 * 1000).toLong()
+        const val UPDATE_INTERVAL = (15 * 1000).toLong()
+        const val FASTEST_INTERVAL = (10 * 1000).toLong()
         const val PERMISSIONS_REQUEST_LOCATION = 99
     }
 
-    init {
-        startLocationUpdates()
-    }
+    fun startLocationUpdates(listener: LocationHasChangedCallback, updateInterval: Long?, fastestInterval: Long?) {
+        //Set the listener to start receiving updates
+        mListener = listener
 
-    private fun startLocationUpdates() {
         // Create the location request to start receiving updates
         mLocationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        mLocationRequest.interval = UPDATE_INTERVAL
-        mLocationRequest.fastestInterval = FASTEST_INTERVAL
+        mLocationRequest.interval = updateInterval ?: UPDATE_INTERVAL
+        mLocationRequest.fastestInterval = fastestInterval ?: FASTEST_INTERVAL
 
         // Create LocationSettingsRequest object using location request
         val builder = LocationSettingsRequest.Builder()
@@ -51,7 +51,7 @@ class LocationServices(private val mActivity: Activity, private val mListener: L
                         override fun onLocationResult(locationResult: LocationResult) {
                             userLatitude = locationResult.lastLocation.latitude
                             userLongitude = locationResult.lastLocation.longitude
-                            mListener.onLocationHasChanged(locationResult.lastLocation)
+                            mListener?.onLocationHasChanged(locationResult.lastLocation)
                         }
                     },
                     Looper.myLooper())
@@ -63,12 +63,12 @@ class LocationServices(private val mActivity: Activity, private val mListener: L
             val locationClient = getFusedLocationProviderClient(mActivity)
             locationClient.lastLocation
                     .addOnSuccessListener {
-                        mListener.onLocationHasChanged(it)
+                        mListener?.onLocationHasChanged(it)
                         userLatitude = it.latitude
                         userLongitude = it.longitude
                     }
                     .addOnFailureListener {
-                        mListener.onLocationHasChangedError(it)
+                        mListener?.onLocationHasChangedError(it)
                     }
         } else {
             requestPermissions()
