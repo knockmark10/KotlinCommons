@@ -90,7 +90,6 @@ class TrackingManager(private val mActivity: Context) {
                 PERMISSIONS_REQUEST_LOCATION
         )
     }
-
 }
 
 interface LocationHasChangedCallback {
