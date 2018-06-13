@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
+import android.location.LocationManager
 import android.os.Looper
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
@@ -12,7 +13,7 @@ import com.google.android.gms.location.*
 import com.google.android.gms.location.LocationServices.getFusedLocationProviderClient
 
 
-class TrackingManager(private val mActivity: Context) {
+class TrackingManager(private val mContext: Context) {
 
     private val mLocationRequest by lazy { LocationRequest() }
     private var userLatitude: Double = 0.0
@@ -27,26 +28,21 @@ class TrackingManager(private val mActivity: Context) {
     }
 
     fun startLocationUpdates(listener: LocationHasChangedCallback, updateInterval: Long? = null, fastestInterval: Long? = null) {
-        //Set the listener to start receiving updates
         mListener = listener
 
-        // Create the location request to start receiving updates
         mLocationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         mLocationRequest.interval = updateInterval ?: UPDATE_INTERVAL
         mLocationRequest.fastestInterval = fastestInterval ?: FASTEST_INTERVAL
 
-        // Create LocationSettingsRequest object using location request
         val builder = LocationSettingsRequest.Builder()
         builder.addLocationRequest(mLocationRequest)
         val locationSettingsRequest = builder.build()
 
-        // Check whether location settings are satisfied
-        val settingsClient = LocationServices.getSettingsClient(mActivity)
+        val settingsClient = LocationServices.getSettingsClient(mContext)
         settingsClient.checkLocationSettings(locationSettingsRequest)
 
-        // new Google API SDK v11 uses getFusedLocationProviderClient(this)
-        if (ContextCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            getFusedLocationProviderClient(mActivity).requestLocationUpdates(
+        if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            getFusedLocationProviderClient(mContext).requestLocationUpdates(
                     mLocationRequest,
                     object : LocationCallback() {
                         override fun onLocationResult(locationResult: LocationResult) {
@@ -61,7 +57,7 @@ class TrackingManager(private val mActivity: Context) {
 
     fun getLastLocation(activity: Activity) {
         if (checkLocationPermissions()) {
-            val locationClient = getFusedLocationProviderClient(mActivity)
+            val locationClient = getFusedLocationProviderClient(mContext)
             locationClient.lastLocation
                     .addOnSuccessListener {
                         mListener?.onLocationHasChanged(it)
@@ -80,8 +76,16 @@ class TrackingManager(private val mActivity: Context) {
 
     fun getLongitude(): Double = this.userLongitude
 
+    fun areLocationServicesEnabled(): Boolean {
+        val locationManager = mContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager?
+        val isGpsEnabled = locationManager?.isProviderEnabled(LocationManager.GPS_PROVIDER) ?: false
+        val isNetworkAvailable = locationManager?.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+                ?: false
+        return isGpsEnabled && isNetworkAvailable
+    }
+
     private fun checkLocationPermissions(): Boolean =
-            ContextCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+            ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
 
     private fun requestPermissions(activity: Activity) {
         ActivityCompat.requestPermissions(
