@@ -123,8 +123,9 @@ fun GoogleMap.centerCamera(listMarker: List<Marker>, zoom: Float) {
 
 fun GoogleMap.centerMarkers(context: Context, latLngList: MutableList<LatLng>) {
     val latLngBounds = LatLngBounds.Builder()
+
     latLngList.forEach {
-        latLngBounds.include(LatLng(0.0, 0.0))
+        latLngBounds.include(it)
     }
 
     val bounds = latLngBounds.build()

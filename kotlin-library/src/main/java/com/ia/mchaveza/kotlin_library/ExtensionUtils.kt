@@ -1,6 +1,8 @@
 package com.ia.mchaveza.kotlin_library
 
+import android.app.Activity
 import android.content.Context
+import android.graphics.Point
 import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
 import android.support.v4.app.Fragment
@@ -62,3 +64,21 @@ fun View.setDrawableBackground(drawableResId: Int) {
 fun View.setColorBackground(colorResId: Int) {
     this.setBackgroundColor(ContextCompat.getColor(this.context, colorResId))
 }
+
+fun Activity.windowHeight(): Int {
+    val display = this.windowManager.defaultDisplay
+    val size = Point()
+    display.getSize(size)
+    return size.y
+}
+
+fun Activity.windowWidth(): Int {
+    val display = this.windowManager.defaultDisplay
+    val size = Point()
+    display.getSize(size)
+    return size.x
+}
+
+
+
+
