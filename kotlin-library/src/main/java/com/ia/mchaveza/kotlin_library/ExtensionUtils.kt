@@ -12,6 +12,7 @@ import android.support.v4.graphics.drawable.DrawableCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import java.util.*
 
 /**
@@ -77,6 +78,13 @@ fun Activity.windowWidth(): Int {
     val size = Point()
     display.getSize(size)
     return size.x
+}
+
+fun Activity.hideSoftKeyboard(view: View?) {
+    view?.let {
+        val inputManager = this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+        inputManager?.hideSoftInputFromWindow(view.windowToken, 0)
+    }
 }
 
 
