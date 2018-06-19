@@ -2,9 +2,14 @@ package com.ia.mchaveza.kotlin_library
 
 import android.app.Activity
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.Point
 import android.graphics.PorterDuff
+import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.ShapeDrawable
+import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.content.ContextCompat
@@ -13,6 +18,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.ImageView
+import android.widget.Toast
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.bumptech.glide.request.RequestOptions
 import java.util.*
 
 /**
@@ -59,7 +69,6 @@ fun ViewGroup.inflate(layoutRes: Int): View =
 
 fun View.setDrawableBackground(drawableResId: Int) {
     this.background = ContextCompat.getDrawable(this.context, drawableResId)
-
 }
 
 fun View.setColorBackground(colorResId: Int) {
@@ -87,6 +96,40 @@ fun Activity.hideSoftKeyboard(view: View?) {
     }
 }
 
+fun ImageView.loadUrl(url: String, requestOptions: RequestOptions, placeholder: Int = R.drawable.ic_placeholder, error: Int = R.drawable.ic_placeholder) {
+    Glide.with(context)
+            .load(url)
+            .apply(requestOptions
+                    .placeholder(placeholder)
+                    .error(error))
+            .transition(DrawableTransitionOptions.withCrossFade())
+            .into(this)
+}
 
+fun ImageView.loadCircularView(url: String? = null, bitmap: Bitmap? = null, placeholder: Int = R.drawable.ic_placeholder, error: Int = R.drawable.ic_placeholder) {
+    val res = url ?: bitmap
+    Glide.with(this.context)
+            .load(res)
+            .apply(RequestOptions.circleCropTransform()
+                    .placeholder(placeholder)
+                    .error(error))
+            .into(this)
+}
 
+fun Drawable.overrideColor(backgroundColor: Int) {
+    when (this) {
+        is GradientDrawable -> setColor(backgroundColor)
+        is ShapeDrawable -> paint.color = backgroundColor
+        is ColorDrawable -> color = backgroundColor
+    }
+}
 
+fun ViewGroup.inflate(viewId: Int, attachRoot: Boolean = false): View? {
+    return LayoutInflater.from(context).inflate(viewId, this, attachRoot)
+}
+
+fun View.snack(message: String, length: Int = Snackbar.LENGTH_INDEFINITE) {
+    val snack = Snackbar.make(this, message, length)
+    snack.setAction(android.R.string.ok, null)
+    snack.show()
+}
