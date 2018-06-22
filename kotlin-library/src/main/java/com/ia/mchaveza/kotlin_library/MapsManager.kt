@@ -23,15 +23,6 @@ import com.google.android.gms.maps.model.Marker
  */
 class MapsManager(private val mContext: Context) {
 
-    enum class Style(val style: String) {
-        Aubergine("Aubergine"),
-        Dark("Dark"),
-        Night("Night"),
-        Retro("Retro"),
-        Silver("Silver"),
-        Default("Default")
-    }
-
     fun getMarkerBitmapFromView(@DrawableRes resourceId: Int): Bitmap {
         val customMarkerView = (mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_marker, null)
         val markerImageView = customMarkerView.findViewById(R.id.custom_marker_icon) as ImageView
@@ -53,4 +44,13 @@ class MapsManager(private val mContext: Context) {
         return returnedBitmap
     }
 
+}
+
+enum class MapsStyles {
+    Aubergine,
+    Dark,
+    Night,
+    Retro,
+    Silver,
+    Default
 }

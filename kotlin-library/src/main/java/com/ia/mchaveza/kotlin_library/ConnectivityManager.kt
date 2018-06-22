@@ -67,10 +67,9 @@ class ConnectivityManager(private val mContext: Context) {
      * @return
      */
     fun isConnectionFast(type: Int, subType: Int): Boolean {
-        return if (type == android.net.ConnectivityManager.TYPE_WIFI) {
-            true
-        } else if (type == android.net.ConnectivityManager.TYPE_MOBILE) {
-            when (subType) {
+        return when (type) {
+            android.net.ConnectivityManager.TYPE_WIFI -> true
+            android.net.ConnectivityManager.TYPE_MOBILE -> when (subType) {
                 TelephonyManager.NETWORK_TYPE_1xRTT -> false // ~ 50-100 kbps
                 TelephonyManager.NETWORK_TYPE_CDMA -> false // ~ 14-64 kbps
                 TelephonyManager.NETWORK_TYPE_EDGE -> false // ~ 50-100 kbps
@@ -99,8 +98,7 @@ class ConnectivityManager(private val mContext: Context) {
                 TelephonyManager.NETWORK_TYPE_UNKNOWN -> false
                 else -> false
             }
-        } else {
-            false
+            else -> false
         }
     }
 

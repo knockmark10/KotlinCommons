@@ -1,13 +1,11 @@
 package com.ia.mchaveza.kotlin_library
 
 import android.Manifest
-import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
 import android.os.Looper
-import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import com.google.android.gms.location.*
 import com.google.android.gms.location.LocationServices.getFusedLocationProviderClient
@@ -24,9 +22,9 @@ class TrackingManager(private val mContext: Context) {
     companion object {
         const val UPDATE_INTERVAL = (15 * 1000).toLong()
         const val FASTEST_INTERVAL = (10 * 1000).toLong()
-        const val PERMISSIONS_REQUEST_LOCATION = 99
     }
 
+    @Suppress("MissingPermission")
     fun startLocationUpdates(listener: LocationHasChangedCallback, updateInterval: Long? = null, fastestInterval: Long? = null) {
         mListener = listener
 
@@ -41,7 +39,7 @@ class TrackingManager(private val mContext: Context) {
         val settingsClient = LocationServices.getSettingsClient(mContext)
         settingsClient.checkLocationSettings(locationSettingsRequest)
 
-        if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (checkLocationPermissions()) {
             getFusedLocationProviderClient(mContext).requestLocationUpdates(
                     mLocationRequest,
                     object : LocationCallback() {
@@ -52,10 +50,13 @@ class TrackingManager(private val mContext: Context) {
                         }
                     },
                     Looper.myLooper())
+        } else {
+            mListener?.onLocationHasChangedError(Exception("Location permission was denied"))
         }
     }
 
-    fun getLastLocation(activity: Activity) {
+    @Suppress("MissingPermission")
+    fun getLastLocation() {
         if (checkLocationPermissions()) {
             val locationClient = getFusedLocationProviderClient(mContext)
             locationClient.lastLocation
@@ -68,7 +69,7 @@ class TrackingManager(private val mContext: Context) {
                         mListener?.onLocationHasChangedError(it)
                     }
         } else {
-            requestPermissions(activity)
+            mListener?.onLocationHasChangedError(Exception("Location permission was denied"))
         }
     }
 
@@ -87,13 +88,6 @@ class TrackingManager(private val mContext: Context) {
     private fun checkLocationPermissions(): Boolean =
             ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
 
-    private fun requestPermissions(activity: Activity) {
-        ActivityCompat.requestPermissions(
-                activity,
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                PERMISSIONS_REQUEST_LOCATION
-        )
-    }
 }
 
 interface LocationHasChangedCallback {
