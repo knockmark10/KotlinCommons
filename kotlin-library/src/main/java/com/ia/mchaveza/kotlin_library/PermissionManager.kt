@@ -6,7 +6,8 @@ import android.content.pm.PackageManager
 import android.support.v4.app.ActivityCompat
 import com.tbruyelle.rxpermissions2.RxPermissions
 
-class PermissionManager(private val mActivity: Activity, private val mListener: PermissionCallback) {
+@Suppress("unused")
+class PermissionManager(private val mActivity: Activity, private val mListener: PermissionCallback? = null) {
 
     companion object {
         const val LOCATION_PERMISSION = 99
@@ -31,9 +32,9 @@ class PermissionManager(private val mActivity: Activity, private val mListener: 
                         .request(permission)
                         .subscribe({ granted ->
                             if (granted) {
-                                mListener.onPermissionGranted(permission)
+                                mListener?.onPermissionGranted(permission)
                             } else {
-                                mListener.onPermissionDenied(permission)
+                                mListener?.onPermissionDenied(permission)
                             }
                         })
                 true
@@ -55,13 +56,13 @@ class PermissionManager(private val mActivity: Activity, private val mListener: 
                     .subscribe({ permission ->
                         when {
                             permission.granted -> {
-                                mListener.onPermissionGranted(permission.name)
+                                mListener?.onPermissionGranted(permission.name)
                             }
                             permission.shouldShowRequestPermissionRationale -> {
-                                mListener.onPermissionDenied(permission.name)
+                                mListener?.onPermissionDenied(permission.name)
                             }
                             else -> {
-                                mListener.onPermissionDenied(permission.name)
+                                mListener?.onPermissionDenied(permission.name)
                             }
                         }
                     })
