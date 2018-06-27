@@ -19,7 +19,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
-import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
@@ -106,13 +105,14 @@ fun ImageView.loadUrl(url: String, requestOptions: RequestOptions, placeholder: 
             .into(this)
 }
 
-fun ImageView.loadCircularView(url: String? = null, bitmap: Bitmap? = null, placeholder: Int = R.drawable.ic_placeholder, error: Int = R.drawable.ic_placeholder) {
+fun ImageView.loadCircularView(url: String? = null, bitmap: Bitmap? = null, placeholder: Int = R.drawable.ic_rounded_placeholder, error: Int = R.drawable.ic_rounded_placeholder) {
     val res = url ?: bitmap
     Glide.with(this.context)
             .load(res)
             .apply(RequestOptions.circleCropTransform()
                     .placeholder(placeholder)
                     .error(error))
+            .transition(DrawableTransitionOptions.withCrossFade())
             .into(this)
 }
 
