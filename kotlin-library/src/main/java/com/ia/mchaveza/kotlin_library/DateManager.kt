@@ -1,6 +1,5 @@
 package com.ia.mchaveza.kotlin_library
 
-import android.content.Context
 import java.util.*
 
 object DateManager {
@@ -8,44 +7,44 @@ object DateManager {
     fun getCurrentYear(): String =
             Calendar.getInstance().get(Calendar.YEAR).toString()
 
-    fun getCurrentMonth(context: Context): String {
+    fun getCurrentMonth(): String {
         val calendar = Calendar.getInstance()
         return when (calendar.get(Calendar.MONTH)) {
             Calendar.JANUARY -> {
-                context.getString(R.string.january)
+                Constants.JANUARY
             }
             Calendar.FEBRUARY -> {
-                context.getString(R.string.january)
+                Constants.FEBRUARY
             }
             Calendar.MARCH -> {
-                context.getString(R.string.january)
+                Constants.MARCH
             }
             Calendar.APRIL -> {
-                context.getString(R.string.january)
+                Constants.APRIL
             }
             Calendar.MAY -> {
-                context.getString(R.string.january)
+                Constants.MAY
             }
             Calendar.JUNE -> {
-                context.getString(R.string.january)
+                Constants.JUNE
             }
             Calendar.JULY -> {
-                context.getString(R.string.january)
+                Constants.JULY
             }
             Calendar.AUGUST -> {
-                context.getString(R.string.january)
+                Constants.AUGUST
             }
             Calendar.SEPTEMBER -> {
-                context.getString(R.string.january)
+                Constants.SEPTEMBER
             }
             Calendar.OCTOBER -> {
-                context.getString(R.string.january)
+                Constants.OCTOBER
             }
             Calendar.NOVEMBER -> {
-                context.getString(R.string.january)
+                Constants.NOVEMBER
             }
             Calendar.DECEMBER -> {
-                context.getString(R.string.january)
+                Constants.DECEMBER
             }
             else -> {
                 ""
@@ -67,25 +66,25 @@ object DateManager {
         val day = calendar.get(Calendar.DAY_OF_WEEK)
         return when (day) {
             Calendar.SUNDAY -> {
-                "Domingo"
+                Constants.SUNDAY
             }
             Calendar.MONDAY -> {
-                "Lunes"
+                Constants.MONDAY
             }
             Calendar.TUESDAY -> {
-                "Martes"
+                Constants.TUESDAY
             }
             Calendar.WEDNESDAY -> {
-                "Miércoles"
+                Constants.WEDNESDAY
             }
             Calendar.THURSDAY -> {
-                "Jueves"
+                Constants.THURSDAY
             }
             Calendar.FRIDAY -> {
-                "Viernes"
+                Constants.FRIDAY
             }
             Calendar.SATURDAY -> {
-                "Sábado"
+                Constants.SATURDAY
             }
             else -> {
                 ""
@@ -96,7 +95,6 @@ object DateManager {
     fun getCurrentDateInMillis() = System.currentTimeMillis()
 
     fun getCurrentHour(): Int = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
-
 
 
 }
