@@ -1,5 +1,6 @@
 package com.ia.mchaveza.kotlin_library
 
+import android.content.Context
 import java.util.*
 
 object DateManager {
@@ -7,44 +8,44 @@ object DateManager {
     fun getCurrentYear(): String =
             Calendar.getInstance().get(Calendar.YEAR).toString()
 
-    fun getCurrentMonth(): String {
+    fun getCurrentMonth(context: Context): String {
         val calendar = Calendar.getInstance()
         return when (calendar.get(Calendar.MONTH)) {
             Calendar.JANUARY -> {
-                "Enero"
+                context.getString(R.string.january)
             }
             Calendar.FEBRUARY -> {
-                "Febrero"
+                context.getString(R.string.january)
             }
             Calendar.MARCH -> {
-                "Marzo"
+                context.getString(R.string.january)
             }
             Calendar.APRIL -> {
-                "Abril"
+                context.getString(R.string.january)
             }
             Calendar.MAY -> {
-                "Mayo"
+                context.getString(R.string.january)
             }
             Calendar.JUNE -> {
-                "Junio"
+                context.getString(R.string.january)
             }
             Calendar.JULY -> {
-                "Julio"
+                context.getString(R.string.january)
             }
             Calendar.AUGUST -> {
-                "Agosto"
+                context.getString(R.string.january)
             }
             Calendar.SEPTEMBER -> {
-                "Septiembre"
+                context.getString(R.string.january)
             }
             Calendar.OCTOBER -> {
-                "Octubre"
+                context.getString(R.string.january)
             }
             Calendar.NOVEMBER -> {
-                "Noviembre"
+                context.getString(R.string.january)
             }
             Calendar.DECEMBER -> {
-                "Diciembre"
+                context.getString(R.string.january)
             }
             else -> {
                 ""
