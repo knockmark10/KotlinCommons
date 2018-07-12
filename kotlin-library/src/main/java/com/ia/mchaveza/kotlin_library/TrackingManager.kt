@@ -82,7 +82,8 @@ class TrackingManager(private val mContext: Context) {
         val isGpsEnabled = locationManager?.isProviderEnabled(LocationManager.GPS_PROVIDER) ?: false
         val isNetworkAvailable = locationManager?.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
                 ?: false
-        return isGpsEnabled && isNetworkAvailable
+        val isPermissionGranted = checkLocationPermissions()
+        return isGpsEnabled && isNetworkAvailable && isPermissionGranted
     }
 
     private fun checkLocationPermissions(): Boolean =
