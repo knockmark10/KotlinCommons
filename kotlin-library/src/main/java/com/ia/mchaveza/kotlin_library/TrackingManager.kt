@@ -25,9 +25,14 @@ class TrackingManager(private val mContext: Context) {
     }
 
     @Suppress("MissingPermission")
-    fun startLocationUpdates(listener: LocationHasChangedCallback, updateInterval: Long? = null, fastestInterval: Long? = null) {
-        mListener = listener
+    fun startLocationUpdates(listener: LocationHasChangedCallback, updateInterval: Long? = null, fastestInterval: Long? = null, useLooper: Boolean = true) {
+        val looper: Looper? = if (useLooper) {
+            Looper.myLooper()
+        } else {
+            null
+        }
 
+        mListener = listener
         mLocationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         mLocationRequest.interval = updateInterval ?: UPDATE_INTERVAL
         mLocationRequest.fastestInterval = fastestInterval ?: FASTEST_INTERVAL
@@ -49,7 +54,7 @@ class TrackingManager(private val mContext: Context) {
                             mListener?.onLocationHasChanged(locationResult.lastLocation)
                         }
                     },
-                    Looper.myLooper())
+                    looper)
         } else {
             mListener?.onLocationHasChangedError(Exception("Location permission was denied"))
         }
