@@ -16,6 +16,7 @@ class TrackingManager(private val mContext: Context) {
     private val mLocationRequest by lazy { LocationRequest() }
     private var userLatitude: Double = 0.0
     private var userLongitude: Double = 0.0
+    private var mFusedClient: FusedLocationProviderClient? = null
 
     private var mListener: LocationHasChangedCallback? = null
 
@@ -45,7 +46,8 @@ class TrackingManager(private val mContext: Context) {
         settingsClient.checkLocationSettings(locationSettingsRequest)
 
         if (checkLocationPermissions()) {
-            getFusedLocationProviderClient(mContext).requestLocationUpdates(
+            mFusedClient = getFusedLocationProviderClient(mContext)
+            mFusedClient?.requestLocationUpdates(
                     mLocationRequest,
                     object : LocationCallback() {
                         override fun onLocationResult(locationResult: LocationResult) {
@@ -61,7 +63,7 @@ class TrackingManager(private val mContext: Context) {
     }
 
     fun stopLocationUpdates() {
-        getFusedLocationProviderClient(mContext).removeLocationUpdates(object : LocationCallback() {
+        mFusedClient?.removeLocationUpdates(object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
             }
         })
