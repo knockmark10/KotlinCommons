@@ -55,6 +55,13 @@ class TrackingManager(private val mContext: Context) {
         }
     }
 
+    fun stopLocationUpdates() {
+        getFusedLocationProviderClient(mContext).removeLocationUpdates(object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult) {
+            }
+        })
+    }
+
     @Suppress("MissingPermission")
     fun getLastLocation() {
         if (checkLocationPermissions()) {
