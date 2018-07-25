@@ -11,7 +11,7 @@ import com.google.android.gms.location.*
 import com.google.android.gms.location.LocationServices.getFusedLocationProviderClient
 
 
-class TrackingManager(private val mContext: Context) {
+class TrackingManager(private val mContext: Context) : LocationCallback() {
 
     private val mLocationRequest by lazy { LocationRequest() }
     private var userLatitude: Double = 0.0
@@ -49,13 +49,7 @@ class TrackingManager(private val mContext: Context) {
             mFusedClient = getFusedLocationProviderClient(mContext)
             mFusedClient?.requestLocationUpdates(
                     mLocationRequest,
-                    object : LocationCallback() {
-                        override fun onLocationResult(locationResult: LocationResult) {
-                            userLatitude = locationResult.lastLocation.latitude
-                            userLongitude = locationResult.lastLocation.longitude
-                            mListener?.onLocationHasChanged(locationResult.lastLocation)
-                        }
-                    },
+                    this,
                     looper)
         } else {
             mListener?.onLocationHasChangedError(Exception("Location permission was denied"))
@@ -63,10 +57,7 @@ class TrackingManager(private val mContext: Context) {
     }
 
     fun stopLocationUpdates() {
-        mFusedClient?.removeLocationUpdates(object : LocationCallback() {
-            override fun onLocationResult(locationResult: LocationResult) {
-            }
-        })
+        mFusedClient?.removeLocationUpdates(this)
     }
 
     @Suppress("MissingPermission")
@@ -102,6 +93,13 @@ class TrackingManager(private val mContext: Context) {
 
     private fun checkLocationPermissions(): Boolean =
             ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+
+    override fun onLocationResult(locationResult: LocationResult) {
+        super.onLocationResult(locationResult)
+        userLatitude = locationResult.lastLocation.latitude
+        userLongitude = locationResult.lastLocation.longitude
+        mListener?.onLocationHasChanged(locationResult.lastLocation)
+    }
 
 }
 
