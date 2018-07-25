@@ -57,6 +57,7 @@ class TrackingManager(private val mContext: Context) : LocationCallback() {
     }
 
     fun stopLocationUpdates() {
+        LocationServices.getFusedLocationProviderClient(mContext).removeLocationUpdates(this)
         mFusedClient?.removeLocationUpdates(this)
     }
 
