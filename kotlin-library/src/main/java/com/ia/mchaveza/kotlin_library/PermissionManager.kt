@@ -2,6 +2,7 @@ package com.ia.mchaveza.kotlin_library
 
 import android.app.Activity
 import android.content.pm.PackageManager
+import android.os.Build
 import android.support.v4.app.ActivityCompat
 import com.tbruyelle.rxpermissions2.RxPermissions
 
@@ -22,13 +23,13 @@ class PermissionManager(private val mActivity: Activity, private val mListener: 
             if (!permissionGranted(permission)) {
                 rxPermission
                         .request(permission)
-                        .subscribe({ granted ->
+                        .subscribe { granted ->
                             if (granted) {
                                 mListener?.onPermissionGranted(permission)
                             } else {
                                 mListener?.onPermissionDenied(permission)
                             }
-                        })
+                        }
                 true
             } else {
                 false
@@ -45,7 +46,7 @@ class PermissionManager(private val mActivity: Activity, private val mListener: 
         if (permissions.isNotEmpty()) {
             rxPermission
                     .requestEach(permissions.contentToString())
-                    .subscribe({ permission ->
+                    .subscribe { permission ->
                         when {
                             permission.granted -> {
                                 mListener?.onPermissionGranted(permission.name)
@@ -57,7 +58,7 @@ class PermissionManager(private val mActivity: Activity, private val mListener: 
                                 mListener?.onPermissionDenied(permission.name)
                             }
                         }
-                    })
+                    }
             return true
         } else {
             return false
@@ -68,7 +69,8 @@ class PermissionManager(private val mActivity: Activity, private val mListener: 
      * Check if some permission was request and granted
      */
     fun permissionGranted(permission: String): Boolean =
-            ActivityCompat.checkSelfPermission(mActivity, permission) == PackageManager.PERMISSION_GRANTED
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1 ||
+                    ActivityCompat.checkSelfPermission(mActivity, permission) == PackageManager.PERMISSION_GRANTED
 
     /**
      * Check that all given permissions have been granted by verifying that each entry in the
