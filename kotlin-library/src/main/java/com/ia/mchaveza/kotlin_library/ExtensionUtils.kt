@@ -20,6 +20,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
 import java.util.*
@@ -113,6 +114,8 @@ fun ImageView.loadCircularView(url: String? = null, bitmap: Bitmap? = null, plac
                     .placeholder(placeholder)
                     .error(error))
             .transition(DrawableTransitionOptions.withCrossFade())
+            .apply(RequestOptions.skipMemoryCacheOf(true))
+            .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.NONE))
             .into(this)
 }
 
