@@ -10,17 +10,17 @@ class SharedPreferencesManager(mContext: Context) {
 
     private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext)
 
-    fun getStringPreference(stringPreference: String) =
-            sharedPreferences.getString(stringPreference, null)
-
-    fun getStringPreference(stringPreference: String, defaultValue: String) =
+    fun getStringPreference(stringPreference: String, defaultValue: String = "") =
             sharedPreferences.getString(stringPreference, defaultValue)
 
-    fun getBooleanPreference(stringPreference: String, defaultValue: Boolean) =
+    fun getBooleanPreference(stringPreference: String, defaultValue: Boolean = false) =
             sharedPreferences.getBoolean(stringPreference, defaultValue)
 
-    fun getIntPreference(stringPreference: String) =
-            sharedPreferences.getInt(stringPreference, -1)
+    fun getIntPreference(stringPreference: String, defaultValue: Int = -1) =
+            sharedPreferences.getInt(stringPreference, defaultValue)
+
+    fun getFloatPreference(stringPreference: String, defaultValue: Float = 0f) =
+            sharedPreferences.getFloat(stringPreference, defaultValue)
 
     fun setStringPreference(preferenceName: String, preference: String) =
             sharedPreferences.edit().putString(preferenceName, preference).apply()
@@ -30,6 +30,9 @@ class SharedPreferencesManager(mContext: Context) {
 
     fun setIntPreference(preferenceName: String, preference: Int) =
             sharedPreferences.edit().putInt(preferenceName, preference).apply()
+
+    fun setFloatPreference(preferenceName: String, preference: Float) =
+            sharedPreferences.edit().putFloat(preferenceName, preference).apply()
 
     fun clearPreferences(preferenceName: String) =
             sharedPreferences.edit().remove(preferenceName).apply()
