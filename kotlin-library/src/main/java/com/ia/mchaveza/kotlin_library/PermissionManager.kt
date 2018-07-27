@@ -1,5 +1,6 @@
 package com.ia.mchaveza.kotlin_library
 
+import android.Manifest
 import android.app.Activity
 import android.content.pm.PackageManager
 import android.os.Build
@@ -68,9 +69,15 @@ class PermissionManager(private val mActivity: Activity, private val mListener: 
     /**
      * Check if some permission was request and granted
      */
-    fun permissionGranted(permission: String): Boolean =
+    fun permissionGranted(permission: String): Boolean {
+        return if (permission == Manifest.permission.GET_ACCOUNTS) {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1 ||
                     ActivityCompat.checkSelfPermission(mActivity, permission) == PackageManager.PERMISSION_GRANTED
+        } else {
+            ActivityCompat.checkSelfPermission(mActivity, permission) == PackageManager.PERMISSION_GRANTED
+        }
+    }
+
 
     /**
      * Check that all given permissions have been granted by verifying that each entry in the
