@@ -18,7 +18,7 @@ class TrackingManager(private val mContext: Context) : LocationCallback() {
     private var userLongitude: Double = 0.0
     private var mFusedClient: FusedLocationProviderClient? = null
 
-    private var mListener: LocationHasChangedCallback? = null
+    private var mListener: TrackingManagerLocationCallback? = null
 
     companion object {
         const val UPDATE_INTERVAL = (15 * 1000).toLong()
@@ -26,7 +26,7 @@ class TrackingManager(private val mContext: Context) : LocationCallback() {
     }
 
     @Suppress("MissingPermission")
-    fun startLocationUpdates(listener: LocationHasChangedCallback, updateInterval: Long? = null, fastestInterval: Long? = null, useLooper: Boolean = true) {
+    fun startLocationUpdates(listener: TrackingManagerLocationCallback, updateInterval: Long? = null, fastestInterval: Long? = null, useLooper: Boolean = true) {
         val looper: Looper? = if (useLooper) {
             Looper.myLooper()
         } else {
@@ -57,7 +57,6 @@ class TrackingManager(private val mContext: Context) : LocationCallback() {
     }
 
     fun stopLocationUpdates() {
-        LocationServices.getFusedLocationProviderClient(mContext).removeLocationUpdates(this)
         mFusedClient?.removeLocationUpdates(this)
     }
 
@@ -104,7 +103,7 @@ class TrackingManager(private val mContext: Context) : LocationCallback() {
 
 }
 
-interface LocationHasChangedCallback {
+interface TrackingManagerLocationCallback {
     fun onLocationHasChanged(location: Location)
     fun onLocationHasChangedError(error: Exception)
 }

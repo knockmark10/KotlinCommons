@@ -188,6 +188,7 @@ class GPSTracker(private val mContext: Context) : Service(), LocationListener {
         return null
     }
 
+    @Deprecated("Use Tracking Manager's callback instead")
     interface LocationHasChangedCallback {
         fun onLocationHasChanged(newLocation: LatLng)
     }
