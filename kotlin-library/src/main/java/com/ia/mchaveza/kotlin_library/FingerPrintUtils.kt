@@ -68,6 +68,7 @@ class FingerPrintUtils(private val mActivity: Activity,
     fun startAuthProcess() {
         generateKey()
         if (initCipher()) {
+            fingerPrintManager = mActivity.getSystemService(Context.FINGERPRINT_SERVICE) as FingerprintManager
             cryptoObject = FingerprintManager.CryptoObject(cipher)
             val helper = FingerprintHelper(fingerPrintManager, this)
             helper.startAuth(cryptoObject)
