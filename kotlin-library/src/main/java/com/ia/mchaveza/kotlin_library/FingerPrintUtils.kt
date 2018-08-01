@@ -18,7 +18,7 @@ class FingerPrintUtils(private val mActivity: Activity, private val mListener: F
 
     companion object {
         private const val ANDROID_KEYSTORE = "AndroidKeyStore"
-        private const val ORSAN_KEY = "OrsanKey"
+        private const val ORSAN_KEY = "FingerKey"
     }
 
     private lateinit var cipher: Cipher
@@ -30,6 +30,10 @@ class FingerPrintUtils(private val mActivity: Activity, private val mListener: F
 
     private val permissionManager by lazy { PermissionManager(mActivity, this) }
 
+    /**
+     * This method validates if your device support fingertip detection
+     * and you have everything setup
+     */
     @SuppressLint("InlinedApi", "MissingPermission")
     fun validateFingerPrint() {
         keyGuardManager = mActivity.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
@@ -53,13 +57,17 @@ class FingerPrintUtils(private val mActivity: Activity, private val mListener: F
         }
     }
 
+    /**
+     * Call this method when you want to start scanning
+     * your fingertip
+     */
     @SuppressLint("NewApi")
     fun startAuthProcess() {
         generateKey()
         if (initCipher()) {
             cryptoObject = FingerprintManager.CryptoObject(cipher)
-            val helper = FingerprintHelper(this)
-            helper.startAuth(fingerPrintManager, cryptoObject)
+            val helper = FingerprintHelper(fingerPrintManager, this)
+            helper.startAuth(cryptoObject)
         }
     }
 
@@ -69,14 +77,17 @@ class FingerPrintUtils(private val mActivity: Activity, private val mListener: F
             keyStore = KeyStore.getInstance(ANDROID_KEYSTORE)
             keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, ANDROID_KEYSTORE)
             keyStore.load(null)
-            keyGenerator.init(
-                    KeyGenParameterSpec.Builder(ORSAN_KEY, KeyProperties.PURPOSE_ENCRYPT)
-                            .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
-                            .setUserAuthenticationRequired(true)
-                            .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
-                            .build())
 
-            keyGenerator.generateKey()
+            val keyProperties = KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
+            val builder = KeyGenParameterSpec.Builder(ORSAN_KEY, keyProperties)
+                    .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
+                    .setUserAuthenticationRequired(true)
+                    .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
+
+            keyGenerator.run {
+                init(builder.build())
+                generateKey()
+            }
         } catch (e: Throwable) {
             mListener.onAuthProcessFailed(e)
         }
@@ -129,6 +140,10 @@ class FingerPrintUtils(private val mActivity: Activity, private val mListener: F
         mListener.onAuthenticationFailed()
     }
 
+    override fun onTooManyAttempts(errorCode: Int, errString: CharSequence?) {
+        mListener.onTooManyAttempts(errorCode, errString)
+    }
+
     interface FingerPrintCallback {
         fun onNoFingerPrintSensor()
         fun onFingerPrintPermissionDenied()
@@ -139,6 +154,7 @@ class FingerPrintUtils(private val mActivity: Activity, private val mListener: F
         fun onAuthenticationFailed()
         fun onAuthenticationHelp(helpCode: Int, helpString: CharSequence?)
         fun onAuthenticationSucceeded(result: FingerprintManager.AuthenticationResult?)
+        fun onTooManyAttempts(errorCode: Int, errString: CharSequence?)
         fun onFingerPrintReady()
     }
 

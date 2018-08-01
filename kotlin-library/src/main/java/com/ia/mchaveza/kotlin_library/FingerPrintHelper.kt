@@ -7,21 +7,45 @@ import android.os.Build
 import android.os.CancellationSignal
 
 @TargetApi(Build.VERSION_CODES.M)
-class FingerprintHelper(private val mListener: FingerPrintHelper) : FingerprintManager.AuthenticationCallback() {
+class FingerprintHelper(private val mManager: FingerprintManager, private val mListener: FingerPrintHelper) : FingerprintManager.AuthenticationCallback() {
 
-    private lateinit var cancellationSignal: CancellationSignal
+    private var cancellationSignal: CancellationSignal? = null
+    private var selfCancelled = false
 
     @SuppressLint("MissingPermission")
-    fun startAuth(manager: FingerprintManager, cryptoObject: FingerprintManager.CryptoObject) {
-        cancellationSignal = CancellationSignal()
-        manager.authenticate(cryptoObject, cancellationSignal, 0, this, null)
+    fun startAuth(cryptoObject: FingerprintManager.CryptoObject) {
+        startListening(cryptoObject)
     }
 
     override fun onAuthenticationError(errorCode: Int, errString: CharSequence?) {
-        mListener.onAuthenticationError(errorCode, errString)
+        if (!selfCancelled) {
+            stopListening()
+            if (errorCode == FingerprintManager.FINGERPRINT_ERROR_LOCKOUT) {
+                mListener.onTooManyAttempts(errorCode, errString)
+            } else {
+                mListener.onAuthenticationError(errorCode, errString)
+            }
+        }
+    }
+
+    private fun startListening(cryptoObject: FingerprintManager.CryptoObject) {
+        cancellationSignal = CancellationSignal()
+        selfCancelled = false
+        mManager.authenticate(cryptoObject, cancellationSignal, 0, this, null)
+    }
+
+    private fun stopListening() {
+        cancellationSignal?.also {
+            selfCancelled = true
+            it.cancel()
+        }
+        cancellationSignal = null
     }
 
     override fun onAuthenticationFailed() {
+        if (!selfCancelled) {
+            stopListening()
+        }
         mListener.onAuthenticationFailed()
     }
 
@@ -38,6 +62,7 @@ class FingerprintHelper(private val mListener: FingerPrintHelper) : FingerprintM
         fun onAuthenticationFailed()
         fun onAuthenticationHelp(helpCode: Int, helpString: CharSequence?)
         fun onAuthenticationSucceeded(result: FingerprintManager.AuthenticationResult?)
+        fun onTooManyAttempts(errorCode: Int, errString: CharSequence?)
     }
 
 }
