@@ -14,7 +14,10 @@ import java.security.KeyStore
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 
-class FingerPrintUtils(private val mActivity: Activity, private val mListener: FingerPrintCallback) : PermissionCallback, FingerprintHelper.FingerPrintHelper {
+class FingerPrintUtils(private val mActivity: Activity,
+                       private val mBasicListener: FingerPrintBasicCallback? = null,
+                       private val mAuthListener: FingerPrintAuthCallback? = null) :
+        PermissionCallback, FingerprintHelper.FingerPrintHelper {
 
     companion object {
         private const val ANDROID_KEYSTORE = "AndroidKeyStore"
@@ -42,18 +45,18 @@ class FingerPrintUtils(private val mActivity: Activity, private val mListener: F
             if (permissionManager.permissionGranted(android.Manifest.permission.USE_FINGERPRINT)) {
                 if (fingerPrintManager.hasEnrolledFingerprints()) {
                     if (keyGuardManager.isKeyguardSecure) {
-                        mListener.onFingerPrintReady()
+                        mBasicListener?.onFingerPrintReady()
                     } else {
-                        mListener.onLockScreenSecurityDisabled()
+                        mBasicListener?.onLockScreenSecurityDisabled()
                     }
                 } else {
-                    mListener.onNoFingerPrintRegistered()
+                    mBasicListener?.onNoFingerPrintRegistered()
                 }
             } else {
                 permissionManager.requestSinglePermission(Manifest.permission.USE_FINGERPRINT)
             }
         } else {
-            mListener.onNoFingerPrintSensor()
+            mBasicListener?.onNoFingerPrintSensor()
         }
     }
 
@@ -89,7 +92,7 @@ class FingerPrintUtils(private val mActivity: Activity, private val mListener: F
                 generateKey()
             }
         } catch (e: Throwable) {
-            mListener.onAuthProcessFailed(e)
+            mAuthListener?.onAuthProcessFailed(e)
         }
     }
 
@@ -105,7 +108,7 @@ class FingerPrintUtils(private val mActivity: Activity, private val mListener: F
             cipher.init(Cipher.ENCRYPT_MODE, key)
             true
         } catch (exception: Throwable) {
-            mListener.onAuthProcessFailed(exception)
+            mAuthListener?.onAuthProcessFailed(exception)
             false
         }
     }
@@ -117,7 +120,7 @@ class FingerPrintUtils(private val mActivity: Activity, private val mListener: F
     }
 
     override fun onPermissionDenied(permission: String) {
-        mListener.onFingerPrintPermissionDenied()
+        mBasicListener?.onFingerPrintPermissionDenied()
     }
 
     override fun onPermissionGranted(permission: String) {
@@ -125,37 +128,40 @@ class FingerPrintUtils(private val mActivity: Activity, private val mListener: F
     }
 
     override fun onAuthenticationError(errorCode: Int, errString: CharSequence?) {
-        mListener.onAuthenticationError(errorCode, errString)
+        mAuthListener?.onAuthenticationError(errorCode, errString)
     }
 
     override fun onAuthenticationHelp(helpCode: Int, helpString: CharSequence?) {
-        mListener.onAuthenticationHelp(helpCode, helpString)
+        mAuthListener?.onAuthenticationHelp(helpCode, helpString)
     }
 
     override fun onAuthenticationSucceeded(result: FingerprintManager.AuthenticationResult?) {
-        mListener.onAuthenticationSucceeded(result)
+        mAuthListener?.onAuthenticationSucceeded(result)
     }
 
     override fun onAuthenticationFailed() {
-        mListener.onAuthenticationFailed()
+        mAuthListener?.onAuthenticationFailed()
     }
 
     override fun onTooManyAttempts(errorCode: Int, errString: CharSequence?) {
-        mListener.onTooManyAttempts(errorCode, errString)
+        mAuthListener?.onTooManyAttempts(errorCode, errString)
     }
 
-    interface FingerPrintCallback {
+    interface FingerPrintBasicCallback {
         fun onNoFingerPrintSensor()
         fun onFingerPrintPermissionDenied()
         fun onNoFingerPrintRegistered()
         fun onLockScreenSecurityDisabled()
+        fun onFingerPrintReady()
+    }
+
+    interface FingerPrintAuthCallback {
         fun onAuthProcessFailed(error: Throwable)
         fun onAuthenticationError(errorCode: Int, errString: CharSequence?)
         fun onAuthenticationFailed()
         fun onAuthenticationHelp(helpCode: Int, helpString: CharSequence?)
         fun onAuthenticationSucceeded(result: FingerprintManager.AuthenticationResult?)
         fun onTooManyAttempts(errorCode: Int, errString: CharSequence?)
-        fun onFingerPrintReady()
     }
 
 }
