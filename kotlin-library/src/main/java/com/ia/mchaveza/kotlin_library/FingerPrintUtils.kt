@@ -30,6 +30,7 @@ class FingerPrintUtils(private val mActivity: Activity,
     private lateinit var cryptoObject: FingerprintManager.CryptoObject
     private lateinit var fingerPrintManager: FingerprintManager
     private lateinit var keyGuardManager: KeyguardManager
+    private var mHelper: FingerprintHelper? = null
 
     private val permissionManager by lazy { PermissionManager(mActivity, this) }
 
@@ -70,8 +71,8 @@ class FingerPrintUtils(private val mActivity: Activity,
         if (initCipher()) {
             fingerPrintManager = mActivity.getSystemService(Context.FINGERPRINT_SERVICE) as FingerprintManager
             cryptoObject = FingerprintManager.CryptoObject(cipher)
-            val helper = FingerprintHelper(fingerPrintManager, this)
-            helper.startAuth(cryptoObject)
+            mHelper = FingerprintHelper(fingerPrintManager, this)
+            mHelper?.startAuth(cryptoObject)
         }
     }
 
@@ -118,6 +119,10 @@ class FingerPrintUtils(private val mActivity: Activity,
         mActivity.packageManager.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)
     } else {
         false
+    }
+
+    private fun stopAuth() {
+        mHelper?.stopListening()
     }
 
     override fun onPermissionDenied(permission: String) {

@@ -34,7 +34,7 @@ class FingerprintHelper(private val mManager: FingerprintManager, private val mL
         mManager.authenticate(cryptoObject, cancellationSignal, 0, this, null)
     }
 
-    private fun stopListening() {
+    fun stopListening() {
         cancellationSignal?.also {
             selfCancelled = true
             it.cancel()
