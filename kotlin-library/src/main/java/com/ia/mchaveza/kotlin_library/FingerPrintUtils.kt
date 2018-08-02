@@ -121,7 +121,7 @@ class FingerPrintUtils(private val mActivity: Activity,
         false
     }
 
-    private fun stopAuth() {
+    fun stopAuth() {
         mHelper?.stopListening()
     }
 
