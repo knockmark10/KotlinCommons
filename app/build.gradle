@@ -3,11 +3,11 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 26
     defaultConfig {
         applicationId "com.ia.mchaveza.kotlin_commons"
         minSdkVersion 21
-        targetSdkVersion 27
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
     }
@@ -26,5 +26,4 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.1.2'
     implementation 'com.facebook.stetho:stetho:1.5.0'
     implementation project(path: ':kotlin-library')
-    implementation 'org.bitbucket.mchaveza:commons-kotlin:1.3.0.6'
 }

@@ -23,9 +23,6 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
-import com.google.zxing.BarcodeFormat
-import com.google.zxing.MultiFormatWriter
-import com.google.zxing.WriterException
 import java.util.*
 
 /**
@@ -120,18 +117,6 @@ fun ImageView.loadCircularView(url: String? = null, bitmap: Bitmap? = null, plac
             .apply(RequestOptions.skipMemoryCacheOf(true))
             .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.NONE))
             .into(this)
-}
-
-fun ImageView.loadBarcode(string: String, barcodeFormat: BarcodeFormat, width: Int = 250, height: Int = 100) {
-    val multiFormatWriter = MultiFormatWriter()
-    try {
-        val bitMatrix = multiFormatWriter.encode(string, barcodeFormat, width, height)
-        val barcodeEncoder = BarcodeEncoder()
-        val qrCode = barcodeEncoder.createBitmap(bitMatrix)
-        this.setImageBitmap(qrCode)
-    } catch (writerException: WriterException) {
-        writerException.printStackTrace()
-    }
 }
 
 fun Drawable.overrideColor(backgroundColor: Int) {
