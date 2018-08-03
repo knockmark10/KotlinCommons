@@ -53,16 +53,16 @@ fun GoogleMap.setMapStyle(mContext: Context, style: MapsStyles) {
 fun GoogleMap.setDaylightStyle(mContext: Context) {
     val style: MapsStyles =
             when {
-                DateManager.currentHour in 8..11 -> {
+                DateManager.getCurrentHour() in 8..11 -> {
                     Default
                 }
-                DateManager.currentHour in 12..18 -> {
+                DateManager.getCurrentHour() in 12..18 -> {
                     Retro
                 }
-                DateManager.currentHour in 19..21 -> {
+                DateManager.getCurrentHour() in 19..21 -> {
                     Aubergine
                 }
-                DateManager.currentHour in 22..23 -> {
+                DateManager.getCurrentHour() in 22..23 -> {
                     Night
                 }
                 else -> {
