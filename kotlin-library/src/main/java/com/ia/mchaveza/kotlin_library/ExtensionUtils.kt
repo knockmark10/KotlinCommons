@@ -26,7 +26,6 @@ import com.bumptech.glide.request.RequestOptions
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.MultiFormatWriter
 import com.google.zxing.WriterException
-import com.journeyapps.barcodescanner.BarcodeEncoder
 import java.util.*
 
 /**
