@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/md_white_1000"
+    android:padding="18dp">
+
+    <TextView
+        android:id="@+id/fingerprint_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/fingerprint_title"
+        android:textColor="@color/md_black_1000"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/fingerprint_instructions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:text="@string/fingerprint_message"
+        android:textColor="@color/md_grey_600"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fingerprint_title" />
+
+    <ImageView
+        android:id="@+id/fingerprint_icon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="20dp"
+        android:src="@drawable/ic_sensor_fingerprint"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fingerprint_instructions" />
+
+    <TextView
+        android:id="@+id/fingerprint_status"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="20dp"
+        android:text="@string/fingerprint_default_status"
+        android:textColor="@color/md_grey_400"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/fingerprint_icon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/fingerprint_icon"
+        app:layout_constraintTop_toTopOf="@+id/fingerprint_icon" />
+
+    <TextView
+        android:id="@+id/fingerprint_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
+        android:padding="3dp"
+        android:text="@string/fingerprint_cancel"
+        android:textAllCaps="true"
+        android:textColor="@color/md_red_700"
+        app:layout_constraintEnd_toStartOf="@+id/fingerprint_change_method"
+        app:layout_constraintTop_toBottomOf="@+id/fingerprint_icon" />
+
+    <TextView
+        android:id="@+id/fingerprint_change_method"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
+        android:padding="3dp"
+        android:text="@string/fingerprint_alt_method"
+        android:textAllCaps="true"
+        android:textColor="@color/md_green_700"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/fingerprint_cancel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/fingerprint_cancel" />
+
+
+</android.support.constraint.ConstraintLayout>

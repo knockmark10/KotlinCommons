@@ -14,4 +14,12 @@
     <string name="october">Octubre</string>
     <string name="november">Noviembre</string>
     <string name="december">Diciembre</string>
+
+    <string name="fingerprint_title">Autenticación</string>
+    <string name="fingerprint_message">Coloca tu huella para autenticarte</string>
+    <string name="fingerprint_default_status">Toca sensor</string>
+    <string name="fingerprint_cancel">Cancelar</string>
+    <string name="fingerprint_alt_method">Usar contraseña</string>
+    <string name="fingerprint_auth_failed">Huella no reconocida</string>
+    <string name="fingerprint_auth_succeeded">Huella no reconocida</string>
 </resources>
