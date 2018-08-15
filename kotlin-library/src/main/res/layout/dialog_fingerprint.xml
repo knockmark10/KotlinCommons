@@ -78,7 +78,7 @@
         android:padding="3dp"
         android:text="@string/fingerprint_alt_method"
         android:textAllCaps="true"
-        android:textColor="@color/md_green_700"
+        android:textColor="@color/md_red_700"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/fingerprint_cancel"
         app:layout_constraintEnd_toEndOf="parent"
