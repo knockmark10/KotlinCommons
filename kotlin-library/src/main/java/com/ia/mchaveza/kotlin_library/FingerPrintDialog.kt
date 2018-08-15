@@ -223,6 +223,9 @@ class FingerPrintDialog : DialogFragment(), FingerPrintUtils.FingerPrintAuthCall
         return this
     }
 
+    /**
+     * Set the buttons color
+     */
     fun buttonsColor(@ColorRes resId: Int) {
         btnChange?.setTextColor(ContextCompat.getColor(activity!!, resId))
         btnCancel?.setTextColor(ContextCompat.getColor(activity!!, resId))
