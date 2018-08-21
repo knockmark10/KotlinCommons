@@ -27,6 +27,8 @@ import com.google.zxing.BarcodeFormat
 import com.google.zxing.MultiFormatWriter
 import com.google.zxing.WriterException
 import com.journeyapps.barcodescanner.BarcodeEncoder
+import se.simbio.encryption.Encryption
+import java.lang.Exception
 import java.util.*
 
 /**
@@ -151,4 +153,37 @@ fun View.snack(message: String, length: Int = Snackbar.LENGTH_INDEFINITE) {
     val snack = Snackbar.make(this, message, length)
     snack.setAction(android.R.string.ok, null)
     snack.show()
+}
+
+fun String.encrypt(): String {
+    return CryptoUtils.getInstance().encryptOrNull(this) ?: ""
+}
+
+fun String.decrypt(): String =
+        CryptoUtils.getInstance().decryptOrNull(this) ?: ""
+
+fun String.encryptAsync(listener: CryptoUtilsCallback) {
+    val encryption = CryptoUtils.getInstance()
+    encryption.encryptAsync(this, object : Encryption.Callback {
+        override fun onSuccess(p0: String?) {
+            listener.onSuccess(p0 ?: "")
+        }
+
+        override fun onError(p0: Exception?) {
+            listener.onError(Throwable(p0?.message.toString()))
+        }
+    })
+}
+
+fun String.decryptAsync(listener: CryptoUtilsCallback) {
+    val decryption = CryptoUtils.getInstance()
+    decryption.decryptAsync(this, object : Encryption.Callback {
+        override fun onSuccess(p0: String?) {
+            listener.onSuccess(p0 ?: "")
+        }
+
+        override fun onError(p0: Exception?) {
+            listener.onError(Throwable(p0?.message.toString()))
+        }
+    })
 }
