@@ -23,13 +23,13 @@ class SharedPreferencesManager(mContext: Context) {
         }
     }
 
-    inline fun <reified T : Any> getSharedPreference(key: String, defaultValue: T? = null): T? =
+    inline fun <reified T : Any> getSharedPreference(key: String, defaultValue: T? = null): T =
             when (T::class) {
-                Int::class -> sharedPreferences.getInt(key, defaultValue as? Int ?: -1) as T?
-                Float::class -> sharedPreferences.getFloat(key, defaultValue as? Float ?: -1f) as T?
-                Long::class -> sharedPreferences.getLong(key, defaultValue as? Long ?: -1L) as T?
-                Boolean::class -> sharedPreferences.getBoolean(key, defaultValue as? Boolean ?: false) as T?
-                String::class -> sharedPreferences.getString(key, defaultValue as? String ?: "") as T?
+                Int::class -> sharedPreferences.getInt(key, defaultValue as? Int ?: -1) as T
+                Float::class -> sharedPreferences.getFloat(key, defaultValue as? Float ?: -1f) as T
+                Long::class -> sharedPreferences.getLong(key, defaultValue as? Long ?: -1L) as T
+                Boolean::class -> sharedPreferences.getBoolean(key, defaultValue as? Boolean ?: false) as T
+                String::class -> sharedPreferences.getString(key, defaultValue as? String ?: "") as T
                 else -> throw UnsupportedOperationException("Value type not supported")
             }
 
