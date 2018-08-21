@@ -36,36 +36,4 @@ class SharedPreferencesManager(mContext: Context) {
     fun clearPreferences(preferenceName: String) =
             sharedPreferences.edit().remove(preferenceName).apply()
 
-    @Deprecated("Use generic getSharedPreference method")
-    fun getStringPreference(stringPreference: String, defaultValue: String = "") =
-            sharedPreferences.getString(stringPreference, defaultValue)
-
-    @Deprecated("Use generic getSharedPreference method")
-    fun getBooleanPreference(stringPreference: String, defaultValue: Boolean = false) =
-            sharedPreferences.getBoolean(stringPreference, defaultValue)
-
-    @Deprecated("Use generic getSharedPreference method")
-    fun getIntPreference(stringPreference: String, defaultValue: Int = -1) =
-            sharedPreferences.getInt(stringPreference, defaultValue)
-
-    @Deprecated("Use generic getSharedPreference method")
-    fun getFloatPreference(stringPreference: String, defaultValue: Float = 0f) =
-            sharedPreferences.getFloat(stringPreference, defaultValue)
-
-    @Deprecated("Use generic setSharedPreference method")
-    fun setStringPreference(preferenceName: String, preference: String) =
-            sharedPreferences.edit().putString(preferenceName, preference).apply()
-
-    @Deprecated("Use generic setSharedPreference method")
-    fun setBooleanPreference(preferenceName: String, preference: Boolean) =
-            sharedPreferences.edit().putBoolean(preferenceName, preference).apply()
-
-    @Deprecated("Use generic setSharedPreference method")
-    fun setIntPreference(preferenceName: String, preference: Int) =
-            sharedPreferences.edit().putInt(preferenceName, preference).apply()
-
-    @Deprecated("Use generic setSharedPreference method")
-    fun setFloatPreference(preferenceName: String, preference: Float) =
-            sharedPreferences.edit().putFloat(preferenceName, preference).apply()
-
 }
