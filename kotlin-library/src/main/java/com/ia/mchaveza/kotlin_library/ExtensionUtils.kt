@@ -155,12 +155,17 @@ fun View.snack(message: String, length: Int = Snackbar.LENGTH_INDEFINITE) {
     snack.show()
 }
 
-fun String.encrypt(): String {
-    return CryptoUtils.getInstance().encryptOrNull(this) ?: ""
-}
+fun String.encrypt(): String =
+        CryptoUtils.getInstance().encryptOrNull(this) ?: ""
+
+fun String.customEncrypt(key: String, salt: String, iv: ByteArray) =
+        CryptoUtils.getCustomInstance(key, salt, iv).encryptOrNull(this) ?: ""
 
 fun String.decrypt(): String =
         CryptoUtils.getInstance().decryptOrNull(this) ?: ""
+
+fun String.customDecrypt(key: String, salt: String, iv: ByteArray) =
+        CryptoUtils.getCustomInstance(key, salt, iv).decryptOrNull(this) ?: ""
 
 fun String.encryptAsync(listener: CryptoUtilsCallback) {
     val encryption = CryptoUtils.getInstance()

@@ -11,6 +11,9 @@ object CryptoUtils {
     fun getInstance(): Encryption =
             Encryption.getDefault(key, salt, iv)
 
+    fun getCustomInstance(key: String, salt: String, iv: ByteArray): Encryption =
+            Encryption.getDefault(key, salt, iv)
+
 }
 
 interface CryptoUtilsCallback {
