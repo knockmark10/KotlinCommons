@@ -1,6 +1,7 @@
 package com.ia.mchaveza.kotlin_library
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import java.lang.UnsupportedOperationException
 
@@ -9,7 +10,7 @@ import java.lang.UnsupportedOperationException
  */
 class SharedPreferencesManager(mContext: Context) {
 
-    private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext)
+    val sharedPreferences: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext)
 
     fun setSharedPreference(key: String, value: Any) {
         when (value) {
@@ -18,18 +19,18 @@ class SharedPreferencesManager(mContext: Context) {
             is Long -> sharedPreferences.edit().putLong(key, value).apply()
             is Boolean -> sharedPreferences.edit().putBoolean(key, value).apply()
             is String -> sharedPreferences.edit().putString(key, value).apply()
-            else -> throw UnsupportedOperationException("")
+            else -> throw UnsupportedOperationException("Value type not supported")
         }
     }
 
-    fun getSharedPreference(key: String, defaultValue: Any?): Any? =
-            when (defaultValue) {
-                is Int -> sharedPreferences.getInt(key, defaultValue)
-                is Float -> sharedPreferences.getFloat(key, defaultValue)
-                is Long -> sharedPreferences.getLong(key, defaultValue)
-                is Boolean -> sharedPreferences.getBoolean(key, defaultValue)
-                is String -> sharedPreferences.getString(key, defaultValue)
-                else -> null
+    inline fun <reified T : Any> getSharedPreference(key: String, defaultValue: T? = null): T? =
+            when (T::class) {
+                Int::class -> sharedPreferences.getInt(key, defaultValue as? Int ?: -1) as T?
+                Float::class -> sharedPreferences.getFloat(key, defaultValue as? Float ?: -1f) as T?
+                Long::class -> sharedPreferences.getLong(key, defaultValue as? Long ?: -1L) as T?
+                Boolean::class -> sharedPreferences.getBoolean(key, defaultValue as? Boolean ?: false) as T?
+                String::class -> sharedPreferences.getString(key, defaultValue as? String ?: "") as T?
+                else -> throw UnsupportedOperationException("Value type not supported")
             }
 
     fun clearPreferences(preferenceName: String) =
