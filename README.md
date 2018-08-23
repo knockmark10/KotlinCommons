@@ -26,6 +26,23 @@ dependencies {
 }
 ```
 
+## **What's new in v2.0**
+
+Since older versions of the library (1.5 and above) there were many methods and classes that were marked as *deprecated* due to the implementation of newer Android API's, or the availability to customize features in an easier and more secure ways to do it.
+
+Below you can find all those methods/classes that were removed from v2.0 and above, and what you can do to replace them.
+
+|Class|Method|Replace with|Type|
+|:--:|:--:|:--:|:--|
+|GPSManager|All|TrackingManager|Class|
+|SharedPreferencesManager|getStringPreference|getSharedPreference|Method|
+|SharedPreferencesManager|getBooleanPreference|getSharedPreference|Method|
+|SharedPreferencesManager|getIntPreference|getSharedPreference|Method|
+|SharedPreferencesManager|getFloatPreference|getSharedPreference|Method|
+|SharedPreferencesManager|setStringPreference|setSharedPreference|Method|
+|SharedPreferencesManager|setBooleanPreference|setSharedPreference|Method|
+|SharedPreferencesManager|setIntPreference|setSharedPreference|Method|
+|SharedPreferencesManager|setFloatPreference|setSharedPreference|Method|
 
 ## **What's inside it?**
 
@@ -50,14 +67,16 @@ You have multiple features within this library:
  [9. Fingerprint Authentication](https://github.com/knockmark10/KotlinCommons/wiki#9-fingerprint-authentication)
  
  [10. Barcode Generation](https://github.com/knockmark10/KotlinCommons/wiki#10-barcode-generation)
+
+ [11. Encryption](https://github.com/knockmark10/KotlinCommons/wiki#11-encryption)
  
- [11. Bonus Stuff](https://github.com/knockmark10/KotlinCommons/wiki#11-bonus-stuff)
+ [12. Bonus Stuff](https://github.com/knockmark10/KotlinCommons/wiki#12-bonus-stuff)
 
 ## **1. Shared Preferences**
 
-This feature provides a persistent store for simple data. Data is persisted to disk asynchronously. You can save Int, String or Boolean. And you can even clear preferences.
-
 ### **Description**
+
+This feature provides a persistent store for simple data. Data is persisted to disk asynchronously. You can save Int, String or Boolean. And you can even clear preferences.
 
 |PUBLIC CONSTRUCTOR|DESCRIPTION|
 |:--:|:--:|
@@ -68,22 +87,18 @@ This feature provides a persistent store for simple data. Data is persisted to d
 
 |Return type|Method name|Parameters|Description|
 |:---------:|:---------:|:--------:|:---------:|
-|String| getStringPreference | *stringPreference**, defaultValue |Returns the requested String type value, defaultValue (if provided) or empty string.
-|Boolean| getBooleanPreference | *stringPreference**, defaultValue |Returns the requested Boolean type value, defaultValue (if provided) or false.
-|Int| getIntPreference | *stringPreference**, defaultValue |Returns the requested Int type value, defaultValue (if provided) or -1.
-|Float| getFloatPreference | *stringPreference**, defaultValue |Returns the requested Float type value, defaultValue (if provided) or 0f.
-|Void| setStringPreference | *preferenceName**, preference|Set the String value for persistent store.
-|Void| setBooleanPreference | *preferenceName**, preference|Set the Boolean value for persistent store.
-|Void| setIntPreference | *preferenceName**, preference|Set the Int value for persistent store.
-|Void| setFloatPreference | *preferenceName**, preference|Set the Float value for persistent store.
-|Void| clearPreferences | *preferenceName**, preference|Deletes the prefenrece given.
+|Any*| getSharedPreference| stringPreference, defaultValue |Returns the requested value, defaultValue (if provided) or empty string.
+|Void| setSharedPreference| *stringPreference**, defaultValue |Stores the value provided with the key given.
+|Void| clearPreferences | *preferenceName**, preference|Deletes the preference given.
+
+**Note:** The return value of the shared preference depends on the default value type provided.
 
 ### **Usage**
 
 ```kotlin
 val preferences = SharedPreferencesManager(context)
-preferences.setStringPreference(PARAM_NAME, value)
-preferences.getStringPreference(PARAM_NAME, defaultValue)
+preferences.setSharedPreference(PARAM_NAME, value)
+preferences.getSharedPreference(PARAM_NAME, defaultValue)
 preferences.clearPreferences(PARAM_NAME)
 ```
 
@@ -115,7 +130,6 @@ In order to use this feature, you need to implement this callback wherever you n
 |:-----:|:----------:|:---------:|
 |onPermissionGranted|permission|If requested permission was granted, you'll be notified within this method|
 |onPermissionDenied|permission|In case the permission gets rejected, you can handle the actions with this method|
-
 
 ### **Usage**
 
@@ -185,7 +199,6 @@ In order to use this feature, you need to implement this callback wherever you n
 |:-----:|:----------:|:---------:|
 |onLocationHasChanged|location|Inside this method, you get location updates|
 |onLocationHasChangedError|error|If any exception is raised while trying to get location, you can handle the error with this method.|
-
 
 ### **Usage**
 
@@ -547,13 +560,74 @@ ivQrCode.loadBarcode(text, BarcodeFormat.CODABAR)
 ivQrCode.loadBarcode(text, BarcodeFormat.QR_CODE)
 ```
 
-## **11. Bonus Stuff**
+## **11. Encryption**
 
 ### **Description**
 
-This library also includes useful stuff you may want to use in your project, such as *Material Design Palette*, with every color you can imagine. You simply need to specify the color (blue, green, grey, etc.) and the alpha value represented in a range from 100 to 900.
+This tool helps you to encrypt/decrypt strings in a very easy way. It is defined as a part of an extension. This feature is based on [*Encryption*](https://github.com/simbiose/Encryption) library.
+
+**Public Methods (String extension)**
+
+|Return type|Method name|Parameters|Description|
+|:---------:|:---------:|:--------:|:---------:|
+|String|encrypt|-|Encrypts a string an returns the converted string, or *empty string* if something went wrong with the process |
+|String|customEncrypt|key, salt, iv|Encrypts a string with custom parameters, an returns the converted string, or *empty string* if something went wrong with the process |
+|String|decrypt|-|Decrypts the given string an returns the decoded string, or *empty string* if something went wrong with the process |
+|String|customDecrypt|key, salt, iv|Decrypts a string with custom parameters, an returns the converted string, or *empty string* if something went wrong with the process |
+|String|encryptAsync|listener*|Encrypts the given string in an asynchronous way. To get the result back, you need to provide ***CryptoUtilsCallback***|
+|String|decryptAsync|listener*|Decrypts the given string in an asynchronous way. To get the result back, you need to provide ***CryptoUtilsCallback***|
+
+**CryptoUtilsCallback**
+
+Interface needed to get the decryption result back when requested in an asynchronous way.
+
+|Method | Parameters |Description|
+|:-----:|:----------:|:---------:|
+|onSuccess|value|Returns the result of the encrypting/decrypting process|
+|onError|error|Returns the error back to handle it|
 
 ### **Usage**
+```kotlin
+...
+val password = "MyPassword"
+val encryptedPassword = password.encrypt()
+val decryptedPassword = password.decrypt()
+```
+
+## **12. Bonus Stuff**
+
+### **12.1. Material Palette**
+
+#### **Description**
+
+The library already has all material design color palette added. All you need to do is to pick one of the colors. Below there is a table that shows how to build the name of the colors available.
+
+| Material Design Color Name|Alpha Values Spec|Example|
+|:-----:|:----------:|:---------:|
+|red|[50 - 500_75]|md_red_50|
+|pink|[50 - 500_75]|md_pink_100|
+|purple|[50 - 500_75]|md_purple_200|
+|deep_purple|[50 - 500_75]|md_deep_purple_300|
+|indigo|[50 - 500_75]|md_indigo_400|
+|blue|[50 - 500_75]|md_blue_500|
+|light_blue|[50 - 500_75]|md_light_blue_600|
+|cyan|[50 - 500_75]|md_cyan_700|
+|teal|[50 - 500_75]|md_teal_800|
+|green|[50 - 500_75]|md_green_900|
+|light_green|[50 - 500_75]|md_light_green_A100|
+|lime|[50 - 500_75]|md_lime_A200|
+|yellow|[50 - 500_75]|md_yellow_A400|
+|amber|[50 - 500_75]|md_amber_A700|
+|orange|[50 - 500_75]|md_orange_500_25|
+|deep_orange|[50 - 500_75]|md_deep_orange_500_50|
+|brown|[50 - 500_75]|md_brown_500_75|
+|grey|[50 - 500_75]|md_grey_800|
+|blue_grey|[50 - 500_75]|md_blue_grey_800|
+|falcon|[50 - 500_75]|md_falcon_800|
+|black|[1000 - 1000_75]|md_black_1000_50|
+|white|[1000 - 1000_75]|md_falcon_1000_75|
+
+#### **Usage**
 ```kotlin
 ...
 //To specify a light grey
@@ -562,36 +636,96 @@ tvText.setColor(ContextCompat.getColor(context, R.color.md_grey_200))
 tvText.setColor(ContextCompat.getColor(context, R.color.md_blue_800))
 ```
 
-Along with this features, you can also find some useful extensions. For instance, you can load url images into ImageView.
+### **12.2. Usefull Extensions**
 
-### **Usage**
+#### **12.2.1. Description**
+
+This library also provides many usefull extensions for the most commons tasks. Look at the table below to know what you can do.
+
+#### **12.2.2. Activity Extensions**
+
+These extensions required an activity to be performed. You can use them to get metrics or to hide soft keyboard.
+
+|Extension Type|Extension Name|Parameters|Description|
+|:-------:|:---------:|:--------:|:------:|
+|Activity|hideSoftKeyboard|view|Hides the keyboard of the input given|
+|Activity|windowHeight|-|Returns the height of the current screen|
+|Activity|windowWidth|-|Returns the width of the current screen|
+
+#### **12.2.2.1 . Usage**
+
 ```kotlin
-...
-//You can also set the scale type
-ivUser.loadUrl(url, RequestOptions.fitCenter())
-//And you can round it with no problem
-ivUser.loadCircularView(url or bitmap)
+val myView = findViewById(R.id.view)
+activity.hideSoftKeyboard(myView )
 ```
 
-You can change the visibility of a view by only calling *gone()* or *visible()* methods.
+#### **12.2.3. Fragment Manager Extensions**
 
-### **Usage**
-```kotlin
-...
-view.gone()
-view.visible()
-```
+Are you tired of fragment transactions? Then, you may find these extensions very usefull. They simplify you code style in a very cool way.
 
-Are you tired of fragment transactions? Well, I have good news. You can simplify all those lines of code into this one:
+|Extension Type|Extension Name|Parameters|Description|
+|:-------:|:---------:|:--------:|:------:|
+|FragmentManager|add|containerViewId, fragment|Adds a fragments to the stack|
+|FragmentManager|removeLastFragment|-|Pops up back stack|
+|FragmentManager|replaceFragment|containerViewId, fragment|Perfoms the replacing fragment transaction|
+|FragmentManager|replaceFragmentAllowingStateLoss|containerViewId, fragment|Perfoms the replacing fragment transaction allowing state loss|
+
+#### **12.2.3.1. Usage**
+
 ```kotlin
 ...
 fragmentManager.replaceFragment(container, yourFragment)
 //if you want to allow state loss 
 fragmentManager.replaceFragmentAllowingStateLoss(container, yourFragment)
 ```
-You want to generate random numbers? You got it! You simply need to do the following:
+
+#### **12.2.4. View Extensions**
+
+These extensions allow you to change the state of the views with one sinlge line of code per action. 
+
+|Extension Type|Extension Name|Parameters|Description|
+|:-------:|:---------:|:--------:|:------:|
+|View|visible|-|Changes the visibility of the view to **VISIBLE**|
+|View|invisible|-|Changes the visibility of the view to **INVISIBLE**|
+|View|gone|-|Changes the visibility of the view to **GONE**|
+|View|setDrawableBackground|drawableResId|Sets some drawable background to the view|
+|View|inflate|layoutRes|Sets some color background to the view|
+|View|snack|message, length|Shows a snackbar with the message and duration provided|
+|ViewGroup|setBackgroundColor|drawableResId|Inflates the view with the root attached to it|
+|ViewGroup|setBackgroundColor|drawableResId|Inflates the view with the root attached to it|
+
+#### **12.2.4.1. Usage**
 ```kotlin
 ...
-//Generate random numbers from 1 to 10
-(0..10).random()
+view.gone()
+view.visible()
+```
+
+#### **12.2.5. Another Extensions**
+
+Some other usefull extensions you can find here.
+
+|Extension Type|Extension Name|Parameters|Description|
+|:-------:|:---------:|:--------:|:------:|
+|ClosedRange|random|-|Generates a random number between the clsed range provided|
+|Drawable|changeDrawableColor|context, color|Changes the color of the drawable provided|
+
+#### **12.2.6. Image Loading**
+
+Last but not least, there's an image loading extension, and it's a very powerful one. Below you can find every variation.
+
+|Extension Type|Extension Name|Parameters|Description|
+|:-------:|:---------:|:--------:|:------:|
+|ImageView|loadUrl|url, requestOptions|Loads the url especified in the image provided, with generic placeholder|
+|ImageView|loadUrl|url, requestOptions, placeholder, error|Loads the url especified in the image provided, with the provided placeholder|
+|ImageView|loadCircularView|url, *placeholder**|Loads the url especified in the image provided with a circular border. **Placeholder** can be provided as well|
+|ImageView|loadCircularView|bitmap, *placeholder**|Loads the bitmap especified in the image provided with a circular border. **Placeholder** can be provided as well|
+
+#### **12.2.6.1. Usage**
+
+```kotlin
+//Loads the URL within myView and sets custom placeholder
+myView.loadUrl(url, R.drawable.placeholder, R.drawable.error)
+//Loads the bitmap image with circular border and default placehold
+myView.loadCircularView(bitmap)
 ```
