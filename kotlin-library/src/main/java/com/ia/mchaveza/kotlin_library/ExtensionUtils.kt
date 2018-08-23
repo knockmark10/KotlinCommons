@@ -55,6 +55,17 @@ fun FragmentManager.replaceFragmentAllowingStateLoss(containerViewId: Int, fragm
             .commitAllowingStateLoss()
 }
 
+fun FragmentManager.add(containerViewId: Int, fragment: Fragment) {
+    this
+            .beginTransaction()
+            .add(containerViewId, fragment)
+            .commit()
+}
+
+fun FragmentManager.removeLastFragment() {
+    this.popBackStack()
+}
+
 fun ClosedRange<Int>.random() =
         Random().nextInt(endInclusive - start) + start
 
@@ -70,16 +81,16 @@ fun View.gone() {
     this.visibility = View.GONE
 }
 
-fun ViewGroup.inflate(layoutRes: Int): View =
-        LayoutInflater.from(context).inflate(layoutRes, this, false)
-
 fun View.setDrawableBackground(drawableResId: Int) {
     this.background = ContextCompat.getDrawable(this.context, drawableResId)
 }
 
-fun View.setColorBackground(colorResId: Int) {
+fun View.setBackgroundColor(colorResId: Int) {
     this.setBackgroundColor(ContextCompat.getColor(this.context, colorResId))
 }
+
+fun ViewGroup.inflate(layoutRes: Int): View =
+        LayoutInflater.from(context).inflate(layoutRes, this, false)
 
 fun Activity.windowHeight(): Int {
     val display = this.windowManager.defaultDisplay
@@ -143,10 +154,6 @@ fun Drawable.overrideColor(backgroundColor: Int) {
         is ShapeDrawable -> paint.color = backgroundColor
         is ColorDrawable -> color = backgroundColor
     }
-}
-
-fun ViewGroup.inflate(viewId: Int, attachRoot: Boolean = false): View? {
-    return LayoutInflater.from(context).inflate(viewId, this, attachRoot)
 }
 
 fun View.snack(message: String, length: Int = Snackbar.LENGTH_INDEFINITE) {
