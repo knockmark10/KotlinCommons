@@ -45,11 +45,11 @@ Below you can find all those methods/classes that were removed from v2.0 and abo
 |SharedPreferencesManager|setFloatPreference|setSharedPreference|Method|
 
 Beside this, some extensions changed for better customization. 
+
 |Extensions Type|Extension Name|Replace with|
 |:--:|:--:|:--:|
 |FragmentManager|replaceFragment|performReplacingTransaction|
 |FragmentManager|addFragment|performAddingTransaction|
-
 
 ## **What's inside it?**
 
