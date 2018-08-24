@@ -672,10 +672,9 @@ Are you tired of fragment transactions? Then, you may find these extensions very
 
 |Extension Type|Extension Name|Parameters|Description|
 |:-------:|:---------:|:--------:|:------:|
-|FragmentManager|add|containerViewId, fragment|Adds a fragments to the stack|
-|FragmentManager|removeLastFragment|-|Pops up back stack|
 |FragmentManager|performReplacingTransaction|containerViewId, fragment, *animations**, *backStackTag**, *allowStateLoss**|Perfoms the replacing fragment transaction|
 |FragmentManager|performAddingTransaction|containerViewId, fragment, *animations**, *backStackTag**, *allowStateLoss**|Perfoms the adding fragment transaction|
+|FragmentManager|removeLastFragment|-|Pops up back stack|
 
 **NOTE:** The parameters marked with (*) indicate that they're optional and you can call them only when needed.
 
@@ -683,9 +682,14 @@ Are you tired of fragment transactions? Then, you may find these extensions very
 
 ```kotlin
 ...
-fragmentManager.replaceFragment(container, yourFragment)
-//if you want to allow state loss 
-fragmentManager.replaceFragmentAllowingStateLoss(container, yourFragment)
+//Simple replacing transaction
+fragmentManager.performFragmentTransaction(container, yourFragment)
+//Replacing transaction with custom animations
+fragmentManager.performFragmentTransaction(container, yourFragment, enterAnim, exitAnim)
+//Replacing transaction with back stack
+fragmentManager.performFragmentTransaction(container, yourFragment, backStackTag = "MyTag")
+//Replacing transaction allowing state loss
+fragmentManager.performFragmentTransaction(container, yourFragment, allowStateLoss = true)
 ```
 
 #### **12.2.4. View Extensions**
