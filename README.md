@@ -44,6 +44,13 @@ Below you can find all those methods/classes that were removed from v2.0 and abo
 |SharedPreferencesManager|setIntPreference|setSharedPreference|Method|
 |SharedPreferencesManager|setFloatPreference|setSharedPreference|Method|
 
+Beside this, some extensions changed for better customization. 
+|Extensions Type|Extension Name|Replace with|
+|:--:|:--:|:--:|
+|FragmentManager|replaceFragment|performReplacingTransaction|
+|FragmentManager|addFragment|performAddingTransaction|
+
+
 ## **What's inside it?**
 
 You have multiple features within this library:
@@ -667,8 +674,10 @@ Are you tired of fragment transactions? Then, you may find these extensions very
 |:-------:|:---------:|:--------:|:------:|
 |FragmentManager|add|containerViewId, fragment|Adds a fragments to the stack|
 |FragmentManager|removeLastFragment|-|Pops up back stack|
-|FragmentManager|replaceFragment|containerViewId, fragment|Perfoms the replacing fragment transaction|
-|FragmentManager|replaceFragmentAllowingStateLoss|containerViewId, fragment|Perfoms the replacing fragment transaction allowing state loss|
+|FragmentManager|performReplacingTransaction|containerViewId, fragment, *animations**, *backStackTag**, *allowStateLoss**|Perfoms the replacing fragment transaction|
+|FragmentManager|performAddingTransaction|containerViewId, fragment, *animations**, *backStackTag**, *allowStateLoss**|Perfoms the adding fragment transaction|
+
+**NOTE:** The parameters marked with (*) indicate that they're optional and you can call them only when needed.
 
 #### **12.2.3.1. Usage**
 
