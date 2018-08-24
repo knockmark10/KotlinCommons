@@ -9,6 +9,9 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.ShapeDrawable
+import android.support.annotation.AnimRes
+import android.support.annotation.AnimatorRes
+import android.support.annotation.IdRes
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
@@ -41,18 +44,87 @@ fun Drawable.changeDrawableColor(context: Context, color: Int): Drawable {
     return wrappedDrawable
 }
 
-fun FragmentManager.replaceFragment(containerViewId: Int, fragment: Fragment) {
-    this
-            .beginTransaction()
-            .replace(containerViewId, fragment)
-            .commit()
+private fun FragmentManager.replaceFragment(@IdRes containerViewId: Int, fragment: Fragment, backStackTag: String?) {
+    if (backStackTag != null) {
+        this
+                .beginTransaction()
+                .replace(containerViewId, fragment)
+                .addToBackStack(backStackTag)
+                .commit()
+    } else {
+        this
+                .beginTransaction()
+                .replace(containerViewId, fragment)
+                .commit()
+    }
 }
 
-fun FragmentManager.replaceFragmentAllowingStateLoss(containerViewId: Int, fragment: Fragment) {
-    this
-            .beginTransaction()
-            .replace(containerViewId, fragment)
-            .commitAllowingStateLoss()
+private fun FragmentManager.replaceWithAnimations(@IdRes containerViewId: Int, fragment: Fragment,
+                                                  @AnimRes @AnimatorRes enterAnim: Int, @AnimRes @AnimatorRes exitAnim: Int,
+                                                  backStackTag: String?) {
+    if (backStackTag != null) {
+        this
+                .beginTransaction()
+                .setCustomAnimations(enterAnim, exitAnim)
+                .replace(containerViewId, fragment)
+                .addToBackStack(backStackTag)
+                .commit()
+    } else {
+        this
+                .beginTransaction()
+                .setCustomAnimations(enterAnim, exitAnim)
+                .replace(containerViewId, fragment)
+                .commit()
+    }
+
+}
+
+private fun FragmentManager.replaceWithPopAnimations(@IdRes containerViewId: Int, fragment: Fragment,
+                                                     @AnimRes @AnimatorRes enterAnim: Int, @AnimRes @AnimatorRes exitAnim: Int,
+                                                     @AnimRes @AnimatorRes popEnterAnim: Int, @AnimRes @AnimatorRes popExitAnim: Int,
+                                                     backStackTag: String?) {
+    if (backStackTag != null) {
+        this
+                .beginTransaction()
+                .setCustomAnimations(enterAnim, exitAnim, popEnterAnim, popExitAnim)
+                .replace(containerViewId, fragment)
+                .addToBackStack(backStackTag)
+                .commit()
+    } else {
+        this
+                .beginTransaction()
+                .setCustomAnimations(enterAnim, exitAnim, popEnterAnim, popExitAnim)
+                .replace(containerViewId, fragment)
+                .commit()
+    }
+
+}
+
+fun FragmentManager.performReplacingTransaction(@IdRes containerViewId: Int, fragment: Fragment,
+                                                @AnimRes @AnimatorRes enterAnim: Int? = null, @AnimRes @AnimatorRes exitAnim: Int? = null,
+                                                @AnimRes @AnimatorRes popEnterAnim: Int? = null, @AnimRes @AnimatorRes popExitAnim: Int? = null,
+                                                backStackTag: String? = null) {
+    if (enterAnim != null) {
+        if (popEnterAnim != null) {
+            this.replaceWithPopAnimations(
+                    containerViewId,
+                    fragment,
+                    enterAnim,
+                    exitAnim!!,
+                    popEnterAnim,
+                    popExitAnim!!,
+                    backStackTag)
+        } else {
+            this.replaceWithAnimations(
+                    containerViewId,
+                    fragment,
+                    enterAnim,
+                    exitAnim!!,
+                    backStackTag)
+        }
+    } else {
+        this.replaceFragment(containerViewId, fragment, backStackTag)
+    }
 }
 
 fun FragmentManager.add(containerViewId: Int, fragment: Fragment) {
@@ -68,6 +140,12 @@ fun FragmentManager.removeLastFragment() {
 
 fun ClosedRange<Int>.random() =
         Random().nextInt(endInclusive - start) + start
+
+fun ClosedRange<Float>.random() =
+        start + Random().nextFloat() * (endInclusive - start)
+
+fun ClosedRange<Double>.random() =
+        start + Random().nextDouble() * (endInclusive - start)
 
 fun View.visible() {
     this.visibility = View.VISIBLE
