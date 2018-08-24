@@ -44,94 +44,50 @@ fun Drawable.changeDrawableColor(context: Context, color: Int): Drawable {
     return wrappedDrawable
 }
 
-private fun FragmentManager.replaceFragment(@IdRes containerViewId: Int, fragment: Fragment, backStackTag: String?) {
-    if (backStackTag != null) {
-        this
-                .beginTransaction()
-                .replace(containerViewId, fragment)
-                .addToBackStack(backStackTag)
-                .commit()
-    } else {
-        this
-                .beginTransaction()
-                .replace(containerViewId, fragment)
-                .commit()
-    }
-}
-
-private fun FragmentManager.replaceWithAnimations(@IdRes containerViewId: Int, fragment: Fragment,
-                                                  @AnimRes @AnimatorRes enterAnim: Int, @AnimRes @AnimatorRes exitAnim: Int,
-                                                  backStackTag: String?) {
-    if (backStackTag != null) {
-        this
-                .beginTransaction()
-                .setCustomAnimations(enterAnim, exitAnim)
-                .replace(containerViewId, fragment)
-                .addToBackStack(backStackTag)
-                .commit()
-    } else {
-        this
-                .beginTransaction()
-                .setCustomAnimations(enterAnim, exitAnim)
-                .replace(containerViewId, fragment)
-                .commit()
-    }
-
-}
-
-private fun FragmentManager.replaceWithPopAnimations(@IdRes containerViewId: Int, fragment: Fragment,
-                                                     @AnimRes @AnimatorRes enterAnim: Int, @AnimRes @AnimatorRes exitAnim: Int,
-                                                     @AnimRes @AnimatorRes popEnterAnim: Int, @AnimRes @AnimatorRes popExitAnim: Int,
-                                                     backStackTag: String?) {
-    if (backStackTag != null) {
-        this
-                .beginTransaction()
-                .setCustomAnimations(enterAnim, exitAnim, popEnterAnim, popExitAnim)
-                .replace(containerViewId, fragment)
-                .addToBackStack(backStackTag)
-                .commit()
-    } else {
-        this
-                .beginTransaction()
-                .setCustomAnimations(enterAnim, exitAnim, popEnterAnim, popExitAnim)
-                .replace(containerViewId, fragment)
-                .commit()
-    }
-
-}
-
 fun FragmentManager.performReplacingTransaction(@IdRes containerViewId: Int, fragment: Fragment,
                                                 @AnimRes @AnimatorRes enterAnim: Int? = null, @AnimRes @AnimatorRes exitAnim: Int? = null,
                                                 @AnimRes @AnimatorRes popEnterAnim: Int? = null, @AnimRes @AnimatorRes popExitAnim: Int? = null,
-                                                backStackTag: String? = null) {
-    if (enterAnim != null) {
-        if (popEnterAnim != null) {
-            this.replaceWithPopAnimations(
-                    containerViewId,
-                    fragment,
-                    enterAnim,
-                    exitAnim!!,
-                    popEnterAnim,
-                    popExitAnim!!,
-                    backStackTag)
+                                                backStackTag: String? = null, allowStateLoss: Boolean? = null) {
+    val transaction = this.beginTransaction()
+    if (enterAnim != null && exitAnim != null) {
+        if (popEnterAnim != null && popExitAnim != null) {
+            transaction.setCustomAnimations(enterAnim, exitAnim, popEnterAnim, popExitAnim)
         } else {
-            this.replaceWithAnimations(
-                    containerViewId,
-                    fragment,
-                    enterAnim,
-                    exitAnim!!,
-                    backStackTag)
+            transaction.setCustomAnimations(enterAnim, exitAnim)
         }
+    }
+    transaction.replace(containerViewId, fragment)
+    if (backStackTag != null) {
+        transaction.addToBackStack(backStackTag)
+    }
+    if (allowStateLoss != null && allowStateLoss) {
+        transaction.commitAllowingStateLoss()
     } else {
-        this.replaceFragment(containerViewId, fragment, backStackTag)
+        transaction.commit()
     }
 }
 
-fun FragmentManager.add(containerViewId: Int, fragment: Fragment) {
-    this
-            .beginTransaction()
-            .add(containerViewId, fragment)
-            .commit()
+fun FragmentManager.performAddingTransaction(@IdRes containerViewId: Int, fragment: Fragment,
+                                                @AnimRes @AnimatorRes enterAnim: Int? = null, @AnimRes @AnimatorRes exitAnim: Int? = null,
+                                                @AnimRes @AnimatorRes popEnterAnim: Int? = null, @AnimRes @AnimatorRes popExitAnim: Int? = null,
+                                                backStackTag: String? = null, allowStateLoss: Boolean? = null) {
+    val transaction = this.beginTransaction()
+    if (enterAnim != null && exitAnim != null) {
+        if (popEnterAnim != null && popExitAnim != null) {
+            transaction.setCustomAnimations(enterAnim, exitAnim, popEnterAnim, popExitAnim)
+        } else {
+            transaction.setCustomAnimations(enterAnim, exitAnim)
+        }
+    }
+    transaction.add(containerViewId, fragment)
+    if (backStackTag != null) {
+        transaction.addToBackStack(backStackTag)
+    }
+    if (allowStateLoss != null && allowStateLoss) {
+        transaction.commitAllowingStateLoss()
+    } else {
+        transaction.commit()
+    }
 }
 
 fun FragmentManager.removeLastFragment() {
