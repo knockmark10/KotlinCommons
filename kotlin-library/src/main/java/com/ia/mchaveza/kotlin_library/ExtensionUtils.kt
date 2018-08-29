@@ -233,3 +233,24 @@ fun String.decryptAsync(listener: CryptoUtilsCallback) {
         }
     })
 }
+
+fun Activity.getAppVersion(type: AppVersion): String {
+    return try {
+        val packageInfo = this.packageManager?.getPackageInfo(this.packageName, 0)
+        when (type) {
+            AppVersion.VersionCode -> {
+                packageInfo?.versionName ?: ""
+            }
+            AppVersion.VersionName -> {
+                packageInfo?.versionCode.toString()
+            }
+        }
+    } catch (exception: Exception) {
+        throw UnsupportedOperationException("Could not get app version. Caused by getAppVersion kotlin extension")
+    }
+}
+
+enum class AppVersion {
+    VersionName,
+    VersionCode
+}
