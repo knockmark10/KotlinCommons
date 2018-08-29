@@ -2,7 +2,6 @@
 
 Why did I decide to do this library? When you're developing an app, you _copy-paste_ the same code over and over again, with the same mistakes. So I decided to build this library to reduce boilerplate, and that's how this library was born. It's under constant development and you can use it anytime you want.
 
-
 # **Setup**
 [![](https://jitpack.io/v/knockmark10/KotlinCommons.svg)](https://jitpack.io/#knockmark10/KotlinCommons)
 
@@ -742,3 +741,20 @@ myView.loadUrl(url, R.drawable.placeholder, R.drawable.error)
 //Loads the bitmap image with circular border and default placehold
 myView.loadCircularView(bitmap)
 ```
+
+#### **12.2.7. Version Name & Version Code**
+
+There's also an extension that you can use to get *VersionName* and *VersionCode* of your package. 
+
+|Extension Type|Extension Name|Parameters|Description|
+|:-------:|:---------:|:--------:|:------:|
+|Activity|getAppVersion|appVersion*|Gets app version or app code (depending on the enum type given) in String format|
+
+**Note:** The *appVersion* parameter described above refers to **AppVersion** enum class. Youo can chose between *VersionCode* and *VersionName*
+
+#### **12.2.7.1. Usage**
+
+```kotlin
+val versionName = activity?.getAppVersion(AppVersion.VersionName)
+val versionCode = activity?.getAppVersion(AppVersion.VersionCode)
+tvVersion = String.format("Version %s", versionName)
