@@ -238,10 +238,10 @@ fun Activity.getAppVersion(type: AppVersion): String {
     return try {
         val packageInfo = this.packageManager?.getPackageInfo(this.packageName, 0)
         when (type) {
-            AppVersion.VersionCode -> {
+            AppVersion.VersionName -> {
                 packageInfo?.versionName ?: ""
             }
-            AppVersion.VersionName -> {
+            AppVersion.VersionCode -> {
                 packageInfo?.versionCode.toString()
             }
         }
