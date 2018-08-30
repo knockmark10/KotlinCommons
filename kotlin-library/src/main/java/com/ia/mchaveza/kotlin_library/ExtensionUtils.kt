@@ -68,9 +68,9 @@ fun FragmentManager.performReplacingTransaction(@IdRes containerViewId: Int, fra
 }
 
 fun FragmentManager.performAddingTransaction(@IdRes containerViewId: Int, fragment: Fragment,
-                                                @AnimRes @AnimatorRes enterAnim: Int? = null, @AnimRes @AnimatorRes exitAnim: Int? = null,
-                                                @AnimRes @AnimatorRes popEnterAnim: Int? = null, @AnimRes @AnimatorRes popExitAnim: Int? = null,
-                                                backStackTag: String? = null, allowStateLoss: Boolean? = null) {
+                                             @AnimRes @AnimatorRes enterAnim: Int? = null, @AnimRes @AnimatorRes exitAnim: Int? = null,
+                                             @AnimRes @AnimatorRes popEnterAnim: Int? = null, @AnimRes @AnimatorRes popExitAnim: Int? = null,
+                                             backStackTag: String? = null, allowStateLoss: Boolean? = null) {
     val transaction = this.beginTransaction()
     if (enterAnim != null && exitAnim != null) {
         if (popEnterAnim != null && popExitAnim != null) {

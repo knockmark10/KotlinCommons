@@ -14,8 +14,10 @@ import java.io.File
 import java.io.IOException
 import java.text.DecimalFormat
 
+@Deprecated("Use ImageHandler instead for better performance and easier integration.")
 class ImageCompression(private val mContext: Context, private val mListener: ImageCompressionCallback) {
 
+    @Deprecated("Use ImageHandler's methods instead for better performance and easier integration.")
     fun compressImage(uri: Uri) {
         val chosenImage = FileUtils.from(mContext, uri)
         customCompressImage(chosenImage)
@@ -76,6 +78,7 @@ class ImageCompression(private val mContext: Context, private val mListener: Ima
         return Base64.encodeToString(byteArray, Base64.DEFAULT)
     }
 
+    @Deprecated("Use ImageHandler's interface instead for better performance and easier integration.")
     interface ImageCompressionCallback {
         fun onImageCompressed(image: Bitmap, fileSize: String, base64Image: String)
         fun onImageCompressedError(error: Throwable)

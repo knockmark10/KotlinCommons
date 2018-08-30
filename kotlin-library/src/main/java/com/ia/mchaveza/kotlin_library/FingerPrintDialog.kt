@@ -14,6 +14,7 @@ import android.widget.TextView
 import rx.Completable
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
+import java.lang.NullPointerException
 import java.util.concurrent.TimeUnit
 
 class FingerPrintDialog : DialogFragment(), FingerPrintUtils.FingerPrintAuthCallback {
@@ -53,6 +54,7 @@ class FingerPrintDialog : DialogFragment(), FingerPrintUtils.FingerPrintAuthCall
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        checkListener()
         statusMessage = getString(R.string.fingerprint_default_status)
         btnCancel?.setOnClickListener(cancelAction)
         btnChange?.setOnClickListener(changeAction)
@@ -134,6 +136,12 @@ class FingerPrintDialog : DialogFragment(), FingerPrintUtils.FingerPrintAuthCall
 
     override fun onTooManyAttempts(errorCode: Int, errString: CharSequence?) {
         setError(errString.toString(), false)
+    }
+
+    private fun checkListener() {
+        if (mListener == null) {
+            throw NullPointerException("FingerPrintDialogCallback interface required. You need to call setListener method.")
+        }
     }
 
     /**
@@ -230,6 +238,7 @@ class FingerPrintDialog : DialogFragment(), FingerPrintUtils.FingerPrintAuthCall
         btnChange?.setTextColor(ContextCompat.getColor(activity!!, resId))
         btnCancel?.setTextColor(ContextCompat.getColor(activity!!, resId))
     }
+
 
     interface FingerPrintDialogCallback {
         fun onAuthenticationSucceeded()

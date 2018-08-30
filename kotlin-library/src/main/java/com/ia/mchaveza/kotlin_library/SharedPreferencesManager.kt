@@ -19,7 +19,7 @@ class SharedPreferencesManager(mContext: Context) {
             is Long -> sharedPreferences.edit().putLong(key, value).apply()
             is Boolean -> sharedPreferences.edit().putBoolean(key, value).apply()
             is String -> sharedPreferences.edit().putString(key, value).apply()
-            else -> throw UnsupportedOperationException("Value type not supported")
+            else -> throw UnsupportedOperationException("Value type not supported.")
         }
     }
 
@@ -30,10 +30,13 @@ class SharedPreferencesManager(mContext: Context) {
                 Long::class -> sharedPreferences.getLong(key, defaultValue as? Long ?: -1L) as T
                 Boolean::class -> sharedPreferences.getBoolean(key, defaultValue as? Boolean ?: false) as T
                 String::class -> sharedPreferences.getString(key, defaultValue as? String ?: "") as T
-                else -> throw UnsupportedOperationException("Value type not supported")
+                else -> throw UnsupportedOperationException("Value type not supported. You need to specify default value with proper type.")
             }
 
     fun clearPreferences(preferenceName: String) =
             sharedPreferences.edit().remove(preferenceName).apply()
+
+    fun cleanAllPreferences() =
+            sharedPreferences.edit().clear().apply()
 
 }

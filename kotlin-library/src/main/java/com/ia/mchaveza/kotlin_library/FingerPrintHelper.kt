@@ -7,7 +7,7 @@ import android.os.Build
 import android.os.CancellationSignal
 
 @TargetApi(Build.VERSION_CODES.M)
-class FingerprintHelper(private val mManager: FingerprintManager, private val mListener: FingerPrintHelper) : FingerprintManager.AuthenticationCallback() {
+internal class FingerprintHelper(private val mManager: FingerprintManager, private val mListener: FingerPrintHelper) : FingerprintManager.AuthenticationCallback() {
 
     private var cancellationSignal: CancellationSignal? = null
     private var selfCancelled = false

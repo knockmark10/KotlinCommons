@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.support.v4.app.ActivityCompat
 import com.tbruyelle.rxpermissions2.RxPermissions
+import java.lang.NullPointerException
 
 @Suppress("unused")
 class PermissionManager(private val mActivity: Activity, private val mListener: PermissionCallback? = null) {
@@ -20,21 +21,23 @@ class PermissionManager(private val mActivity: Activity, private val mListener: 
      * @return boolean -> true if it needs to be requested
      *                    false ft it was already requested
      */
-    fun requestSinglePermission(permission: String): Boolean =
-            if (!permissionGranted(permission)) {
-                rxPermission
-                        .request(permission)
-                        .subscribe { granted ->
-                            if (granted) {
-                                mListener?.onPermissionGranted(permission)
-                            } else {
-                                mListener?.onPermissionDenied(permission)
-                            }
+    fun requestSinglePermission(permission: String): Boolean {
+        checkListener()
+        return if (!permissionGranted(permission)) {
+            rxPermission
+                    .request(permission)
+                    .subscribe { granted ->
+                        if (granted) {
+                            mListener?.onPermissionGranted(permission)
+                        } else {
+                            mListener?.onPermissionDenied(permission)
                         }
-                true
-            } else {
-                false
-            }
+                    }
+            true
+        } else {
+            false
+        }
+    }
 
     /**
      * This function allows you to request multiple permissions
@@ -44,6 +47,7 @@ class PermissionManager(private val mActivity: Activity, private val mListener: 
      * @return boolean -> permissions are valid or not
      */
     fun requestMultiplePermissions(vararg permissions: String): Boolean {
+        checkListener()
         if (permissions.isNotEmpty()) {
             rxPermission
                     .requestEach(permissions.contentToString())
@@ -78,7 +82,6 @@ class PermissionManager(private val mActivity: Activity, private val mListener: 
         }
     }
 
-
     /**
      * Check that all given permissions have been granted by verifying that each entry in the
      * given array is of the value [PackageManager.PERMISSION_GRANTED].
@@ -90,6 +93,12 @@ class PermissionManager(private val mActivity: Activity, private val mListener: 
             return false
         }
         return grantResults.none { it != PackageManager.PERMISSION_GRANTED }
+    }
+
+    private fun checkListener() {
+        if (mListener == null) {
+            throw NullPointerException("PermissionCallback interface required. You need to pass it in constructor.")
+        }
     }
 
 }

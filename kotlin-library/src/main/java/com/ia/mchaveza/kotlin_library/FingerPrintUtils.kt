@@ -10,6 +10,7 @@ import android.hardware.fingerprint.FingerprintManager
 import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
+import java.lang.NullPointerException
 import java.security.KeyStore
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
@@ -40,6 +41,7 @@ class FingerPrintUtils(private val mActivity: Activity,
      */
     @SuppressLint("InlinedApi", "MissingPermission")
     fun validateFingerPrint() {
+        checkBasicListener()
         keyGuardManager = mActivity.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
         fingerPrintManager = mActivity.getSystemService(Context.FINGERPRINT_SERVICE) as FingerprintManager
         if (checkFingerPrintSensor()) {
@@ -67,6 +69,7 @@ class FingerPrintUtils(private val mActivity: Activity,
      */
     @SuppressLint("NewApi")
     fun startAuthProcess() {
+        checkAuthListener()
         generateKey()
         if (initCipher()) {
             fingerPrintManager = mActivity.getSystemService(Context.FINGERPRINT_SERVICE) as FingerprintManager
@@ -151,6 +154,18 @@ class FingerPrintUtils(private val mActivity: Activity,
 
     override fun onTooManyAttempts(errorCode: Int, errString: CharSequence?) {
         mAuthListener?.onTooManyAttempts(errorCode, errString)
+    }
+
+    private fun checkBasicListener() {
+        if (mBasicListener == null) {
+            throw NullPointerException("FingerPrintBasicCallback interface required. You need to pass it in constructor.")
+        }
+    }
+
+    private fun checkAuthListener() {
+        if (mAuthListener == null) {
+            throw NullPointerException("FingerPrintBasicCallback interface required. You need to pass it in constructor.")
+        }
     }
 
     interface FingerPrintBasicCallback {
