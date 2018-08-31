@@ -29,6 +29,8 @@ dependencies {
 
 Since older versions of the library (1.5 and above) there were many methods and classes that were marked as *deprecated* due to the implementation of newer Android API's, or the availability to customize features in an easier and more secure ways to do it.
 
+Also, this new version includes automatic methods to check and request permissions when some feature requires it ONLY by calling the desired feature! Some examples of this include Location and Fingerprint features.
+
 Below you can find all those methods/classes that were removed from v2.0 and above, and what you can do to replace them.
 
 |Class|Method|Replace with|Type|
@@ -57,7 +59,7 @@ You have multiple features within this library:
 
  [1. Shared Preferences](https://github.com/knockmark10/KotlinCommons/wiki#1-shared-preferences)
  
- [2. Runtime Permissions Manager](https://github.com/knockmark10/KotlinCommons/wiki#2-runtime-permissions-manager)
+ [2. Permissions Manager](https://github.com/knockmark10/KotlinCommons/wiki#2-runtime-permissions-manager)
  
  [3. Geocoder Manager](https://github.com/knockmark10/KotlinCommons/wiki#3-geocoder-manager)
  
@@ -69,7 +71,7 @@ You have multiple features within this library:
  
  [7. Validator Utils](https://github.com/knockmark10/KotlinCommons/wiki#7-validator-utils)
  
- [8. Image Compression](https://github.com/knockmark10/KotlinCommons/wiki#8-image-compression)
+ [~~8. Image Compression~~](https://github.com/knockmark10/KotlinCommons/wiki#8-image-compression)
  
  [9. Fingerprint Authentication](https://github.com/knockmark10/KotlinCommons/wiki#9-fingerprint-authentication)
  
@@ -77,7 +79,9 @@ You have multiple features within this library:
 
  [11. Encryption](https://github.com/knockmark10/KotlinCommons/wiki#11-encryption)
  
- [12. Bonus Stuff](https://github.com/knockmark10/KotlinCommons/wiki#12-bonus-stuff)
+ [12. ImageHandler](https://github.com/knockmark10/KotlinCommons/wiki#13-image-handler)
+ 
+ [13. Bonus Stuff](https://github.com/knockmark10/KotlinCommons/wiki#12-bonus-stuff)
 
 ## **1. Shared Preferences**
 
@@ -109,7 +113,7 @@ preferences.getSharedPreference(PARAM_NAME, defaultValue)
 preferences.clearPreferences(PARAM_NAME)
 ```
 
-## **2. Runtime Permissions Manager**
+## **2. Permissions Manager**
 
 ### **Description**
 
@@ -125,9 +129,11 @@ This feature allows you to check if some permission was already requested, and t
 |Return type|Method name|Parameters|Description|
 |:---------:|:---------:|:--------:|:---------:|
 |Boolean|requestSinglePermission|*permission**|Requests the desired permission and return a boolean value indication whether or not the request was made succesfully or not|
-|Boolean|requestMultiplePermissions|vararg *permissions**|Requests the desired permissions and return a boolean value indication whether or not the request was made succesfully or not|
-|Boolean|permissionGranted|*permission**|Returns a value indicating if the permission was granted or rejected|
-|Boolean|verifyPermissions|*permission**|Checks that all given permissions have been granted by verifying that each entry in the given array is of the value **PackageManager.PERMISION_GRANTED**|
+|Boolean|requestMultiplePermissions|vararg permissions|Requests the desired permissions and return a boolean value indication whether or not the request was made succesfully or not|
+|Boolean|permissionGranted|permission|Returns a value indicating if the permission was granted or rejected|
+|Boolean|checkManifestPermission|permission|Checks if some permission is declared in the manifest and returns true or false.|
+|Boolean|checkManifestPermissions|permissions|Returns a value indicating if the permissions are present in the manifest.|
+|Boolean|verifyPermissions|permission|Checks that all given permissions have been granted by verifying that each entry in the given array is of the value **PackageManager.PERMISION_GRANTED**|
 
 **PermissionCallback**
 
@@ -181,7 +187,7 @@ val postalCode = geocoder.getPostalCodeByCoordinates(context, location.latitude,
 
 ### **Description**
 
-This feature allows you to detect user's location with a very easy setup.
+This feature allows you to detect user's location with a very easy setup. You can also set it up to automatically check if permission is in manifest, if permission was granted and to request it if rejected. 
 
 |PUBLIC CONSTRUCTOR|DESCRIPTION|
 |:--:|:--:|
@@ -191,6 +197,7 @@ This feature allows you to detect user's location with a very easy setup.
 
 |Return type|Method name|Parameters|Description|
 |:---------:|:---------:|:--------:|:---------:|
+|Void|enablePermissionSetup|activity|Enables automatic runtime permission requests when permissions are rejected. This will check if permission is added in manifest and if it was rejected or not.|
 |Void|startLocationUpdates|*listener**, updateInterval, fastestInterval, useLooper|Starts receiving updates from the gps|
 |Void|stopLocationUpdates|-|Stops receiving updates from gps and turn off location provider|
 |Location|getLastLocation|-|Gets user's last known location|
@@ -209,11 +216,25 @@ In order to use this feature, you need to implement this callback wherever you n
 
 ### **Usage**
 
+First of all, you need to declare the proper permissions on the *Manifest*.
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"  
+  package="YOUR_PACKAGE_NAME" >
+	  <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>  
+	  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+</manifest>
+```
+
+Then, you can go on with the process.
+
 ```kotlin
 //Your class needs to implement LocationHasChangedCallback
 class MyClass : LocationHasChangedCallback{
 	...
 	val trackingManager = TrackingManager(context)
+	//Enable automatic permission check and request
+	trackingManager.enablePermissionSetup(activity)
 	// Start receiving location updates
 	trackingManager.startLocationUpdates(this)
 	//let's check if location services are running
@@ -337,9 +358,9 @@ val isEmptyField = ValidatorUtils.isEmptyField(textInputLayout, editText, emptyF
 val isFieldLongEnough= ValidatorUtils.isFieldLongEnough(textInputLayout, editText, length, fieldMessageString)
 ```
 
-## **~~8. Image Compression~~**
+## **(Deprecated) ~~8. Image Compression~~**
 
-**Important note:** This class has been *deprecated*. Please use *ImageHandler* class instead. In future release this class will be removed.
+**Important note:** This class has been *deprecated*. Please use *ImageHandler* class instead. In further releases this class will be removed.
 
 ### **Description**
 
@@ -435,12 +456,22 @@ Once the validation process is done, you need this interface to carry on with th
 
 ### **Usage**
 
-First of all, we need to instantiate our class.
+In the first place, you need to add both fingerprint permission and feature on the *Manifest*.
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"  
+  package="YOUR_PACKAGE_NAME" >
+	  <uses-permission android:name="android.permission.USE_FINGERPRINT" />  
+	  <uses-feature android:name="android.hardware.fingerprint" />
+</manifest>
+```
+
+Then, we can instantiate our class
 ```kotlin
 ...
 val fingerPrintManager = FingerPrintUtils(context, mBasicListener, mAuthListener) 
 ```
-Then, if we're gonna check user's device, we do it like this:
+After that, if we're gonna check user's device, we do it like this:
 
 ```kotlin
 //Let's check if user's device supports fingerprint authentication
@@ -640,6 +671,18 @@ Use this interface when you need to save screenshots. Note that it will raise an
 |onScreenShotError|error|If there's any error, you can handle it in here|
 
 ### **Usage**
+
+You need to add the permission to write in external storage. Otherwise, it will throw an exception.
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"  
+  package="YOUR_PACKAGE_NAME" >
+	  <uses-permission android:name="android.permission.USE_FINGERPRINT" />  
+	  <uses-feature android:name="android.hardware.fingerprint" />
+</manifest>
+```
+
+After that, you need to instantiate the class with the proper callbacks. If you're not pretty much sure on what callback you need, run the app and if it's not properly set up, it will raise an exception explaining what needs to be done. If you want to avoid exceptions, please read the documentation.
 
 ```kotlin
 class MyClass: ImageHandler.ImageHandlerCallback, ImageHandler.ScreenShotHandlerCallback{
