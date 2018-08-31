@@ -1,6 +1,7 @@
 package com.ia.mchaveza.kotlin_library
 
 import android.Manifest
+import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
@@ -11,12 +12,13 @@ import com.google.android.gms.location.*
 import com.google.android.gms.location.LocationServices.getFusedLocationProviderClient
 
 
-class TrackingManager(private val mContext: Context) : LocationCallback() {
+class TrackingManager(private val mActivity: Activity) : LocationCallback(), PermissionCallback {
 
-    private val mLocationRequest by lazy { LocationRequest() }
     private var userLatitude: Double = 0.0
     private var userLongitude: Double = 0.0
     private var mFusedClient: FusedLocationProviderClient? = null
+    private val mLocationRequest by lazy { LocationRequest() }
+    private val permissionManager by lazy { PermissionManager(mActivity, this) }
 
     private var mListener: TrackingManagerLocationCallback? = null
 
@@ -27,6 +29,8 @@ class TrackingManager(private val mContext: Context) : LocationCallback() {
 
     @Suppress("MissingPermission")
     fun startLocationUpdates(listener: TrackingManagerLocationCallback, updateInterval: Long? = null, fastestInterval: Long? = null, useLooper: Boolean = true) {
+        handleManifestPermissions()
+
         val looper: Looper? = if (useLooper) {
             Looper.myLooper()
         } else {
@@ -42,17 +46,17 @@ class TrackingManager(private val mContext: Context) : LocationCallback() {
         builder.addLocationRequest(mLocationRequest)
         val locationSettingsRequest = builder.build()
 
-        val settingsClient = LocationServices.getSettingsClient(mContext)
+        val settingsClient = LocationServices.getSettingsClient(mActivity)
         settingsClient.checkLocationSettings(locationSettingsRequest)
 
         if (checkLocationPermissions()) {
-            mFusedClient = getFusedLocationProviderClient(mContext)
+            mFusedClient = getFusedLocationProviderClient(mActivity)
             mFusedClient?.requestLocationUpdates(
                     mLocationRequest,
                     this,
                     looper)
         } else {
-            mListener?.onLocationHasChangedError(Exception("Location permission was denied"))
+            onPermissionDenied(Manifest.permission.ACCESS_FINE_LOCATION)
         }
     }
 
@@ -63,7 +67,7 @@ class TrackingManager(private val mContext: Context) : LocationCallback() {
     @Suppress("MissingPermission")
     fun getLastLocation() {
         if (checkLocationPermissions()) {
-            val locationClient = getFusedLocationProviderClient(mContext)
+            val locationClient = getFusedLocationProviderClient(mActivity)
             locationClient.lastLocation
                     .addOnSuccessListener {
                         mListener?.onLocationHasChanged(it)
@@ -74,7 +78,7 @@ class TrackingManager(private val mContext: Context) : LocationCallback() {
                         mListener?.onLocationHasChangedError(it)
                     }
         } else {
-            mListener?.onLocationHasChangedError(Exception("Location permission was denied"))
+            onPermissionDenied(Manifest.permission.ACCESS_FINE_LOCATION)
         }
     }
 
@@ -83,7 +87,7 @@ class TrackingManager(private val mContext: Context) : LocationCallback() {
     fun getLongitude(): Double = this.userLongitude
 
     fun areLocationServicesEnabled(): Boolean {
-        val locationManager = mContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager?
+        val locationManager = mActivity.getSystemService(Context.LOCATION_SERVICE) as LocationManager?
         val isGpsEnabled = locationManager?.isProviderEnabled(LocationManager.GPS_PROVIDER) ?: false
         val isNetworkAvailable = locationManager?.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
                 ?: false
@@ -92,13 +96,29 @@ class TrackingManager(private val mContext: Context) : LocationCallback() {
     }
 
     private fun checkLocationPermissions(): Boolean =
-            ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+            ContextCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
 
     override fun onLocationResult(locationResult: LocationResult) {
         super.onLocationResult(locationResult)
         userLatitude = locationResult.lastLocation.latitude
         userLongitude = locationResult.lastLocation.longitude
         mListener?.onLocationHasChanged(locationResult.lastLocation)
+    }
+
+    private fun handleManifestPermissions() {
+        if (!permissionManager.checkManifestPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
+            throw SecurityException("Manifest permission missing. You need ACCESS_FINE_LOCATION and ACCESS_COARSE_LOCATION to use this feature.")
+        }
+        if (!permissionManager.permissionGranted(Manifest.permission.ACCESS_FINE_LOCATION)) {
+            permissionManager.requestSinglePermission(Manifest.permission.ACCESS_FINE_LOCATION)
+        }
+    }
+
+    override fun onPermissionGranted(permission: String) {
+    }
+
+    override fun onPermissionDenied(permission: String) {
+        mListener?.onLocationHasChangedError(RuntimeException("Location services won't work if location permissions are denied. $permission is required."))
     }
 
 }

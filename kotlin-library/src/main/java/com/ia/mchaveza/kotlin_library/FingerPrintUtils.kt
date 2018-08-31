@@ -27,12 +27,11 @@ class FingerPrintUtils(private val mActivity: Activity,
 
     private lateinit var cipher: Cipher
     private lateinit var keyStore: KeyStore
-    private lateinit var keyGenerator: KeyGenerator
-    private lateinit var cryptoObject: FingerprintManager.CryptoObject
-    private lateinit var fingerPrintManager: FingerprintManager
-    private lateinit var keyGuardManager: KeyguardManager
     private var mHelper: FingerprintHelper? = null
-
+    private lateinit var keyGenerator: KeyGenerator
+    private lateinit var keyGuardManager: KeyguardManager
+    private lateinit var fingerPrintManager: FingerprintManager
+    private lateinit var cryptoObject: FingerprintManager.CryptoObject
     private val permissionManager by lazy { PermissionManager(mActivity, this) }
 
     /**
@@ -42,6 +41,7 @@ class FingerPrintUtils(private val mActivity: Activity,
     @SuppressLint("InlinedApi", "MissingPermission")
     fun validateFingerPrint() {
         checkBasicListener()
+        checkManifestPermission()
         keyGuardManager = mActivity.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
         fingerPrintManager = mActivity.getSystemService(Context.FINGERPRINT_SERVICE) as FingerprintManager
         if (checkFingerPrintSensor()) {
@@ -165,6 +165,12 @@ class FingerPrintUtils(private val mActivity: Activity,
     private fun checkAuthListener() {
         if (mAuthListener == null) {
             throw NullPointerException("FingerPrintBasicCallback interface required. You need to pass it in constructor.")
+        }
+    }
+
+    private fun checkManifestPermission() {
+        if (!permissionManager.checkManifestPermission(Manifest.permission.USE_FINGERPRINT)) {
+            throw SecurityException("Manifest permission missing. You need USE_FINGERPRINT to use this feature.")
         }
     }
 

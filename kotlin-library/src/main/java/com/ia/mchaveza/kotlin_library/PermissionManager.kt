@@ -17,7 +17,7 @@ class PermissionManager(private val mActivity: Activity, private val mListener: 
      * This function allows you to request single permission
      * without splitting the process in two different places.
      * You only need to specify:
-     * @param permission you want to request
+     * @param permission must be of type [Manifest.permission]
      * @return boolean -> true if it needs to be requested
      *                    false ft it was already requested
      */
@@ -43,7 +43,7 @@ class PermissionManager(private val mActivity: Activity, private val mListener: 
      * This function allows you to request multiple permissions
      * without splitting the process in two different places.
      * You only need to specify:
-     * @param permissions you want to request
+     * @param permissions -> Every entry must be of type [Manifest.permission]
      * @return boolean -> permissions are valid or not
      */
     fun requestMultiplePermissions(vararg permissions: String): Boolean {
@@ -72,6 +72,7 @@ class PermissionManager(private val mActivity: Activity, private val mListener: 
 
     /**
      * Check if some permission was request and granted
+     * @param permission must be of type [Manifest.permission]
      */
     fun permissionGranted(permission: String): Boolean {
         return if (permission == Manifest.permission.GET_ACCOUNTS) {
@@ -80,6 +81,37 @@ class PermissionManager(private val mActivity: Activity, private val mListener: 
         } else {
             ActivityCompat.checkSelfPermission(mActivity, permission) == PackageManager.PERMISSION_GRANTED
         }
+    }
+
+    /**
+     * Checks if some permission is declared in the manifest.
+     * @param permission must be of type [Manifest.permission]
+     */
+    fun checkManifestPermission(permission: String): Boolean {
+        var isPresent = false
+        with(mActivity) {
+            val packageInfo = packageManager.getPackageInfo(packageName, android.content.pm.PackageManager.GET_PERMISSIONS)
+            val permissions = packageInfo.requestedPermissions
+            permissions.forEach {
+                if (it.toLowerCase().contains(permission.toLowerCase(), true)) {
+                    isPresent = true
+                }
+            }
+        }
+        return isPresent
+    }
+
+    /**
+     * Checks if multiple permissions were declared in the manifest.
+     * Every entry in the given array must be of the value [Manifest.permission]
+     * @return false if at least one permission is not present
+     */
+    private fun checkManifestPermissions(vararg permissions: String): Boolean {
+        var isPresent = true
+        permissions.forEach {
+            isPresent = isPresent and checkManifestPermission(it)
+        }
+        return isPresent
     }
 
     /**

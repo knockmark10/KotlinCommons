@@ -40,10 +40,6 @@ class ImageHandler(private val activity: Activity,
     fun takeScreenShot(saveIt: Boolean): Bitmap {
         currentTask = CurrentTask.Screenshot
 
-        val now = Date()
-        DateFormat.format("yyyy-MM-dd_hh:mm:ss", now)
-        path = Environment.getExternalStorageDirectory().toString() + "/" + now + ".jpg"
-
         val view = activity.window.decorView.rootView
         view.isDrawingCacheEnabled = true
         view.measure(View.MeasureSpec.makeMeasureSpec(activity.windowWidth(), View.MeasureSpec.UNSPECIFIED),
@@ -56,6 +52,10 @@ class ImageHandler(private val activity: Activity,
 
         if (saveIt) {
             checkScreenShotListener()
+
+            val now = Date()
+            DateFormat.format("yyyy-MM-dd_hh:mm:ss", now)
+            path = Environment.getExternalStorageDirectory().toString() + "/" + now + ".jpg"
             saveScreenShot()
         }
 
@@ -72,6 +72,11 @@ class ImageHandler(private val activity: Activity,
         currentTask = CurrentTask.Compress
         this.quality = desiredQuality
         actualImage = FileUtils.from(activity, uri)
+
+        if (!permissionManager.checkManifestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            throw SecurityException("Manifest permission missing. You need to declare WRITE_EXTERNAL_STORAGE permission in the manifest to use this feature.")
+        }
+
         if (permissionManager.permissionGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             customCompressImage(actualImage, desiredQuality)
         } else {
