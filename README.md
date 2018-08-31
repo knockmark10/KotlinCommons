@@ -42,6 +42,7 @@ Below you can find all those methods/classes that were removed from v2.0 and abo
 |SharedPreferencesManager|setBooleanPreference|setSharedPreference|Method|
 |SharedPreferencesManager|setIntPreference|setSharedPreference|Method|
 |SharedPreferencesManager|setFloatPreference|setSharedPreference|Method|
+|ImageCompression|All|ImageHandler|Class|
 
 Beside this, some extensions changed for better customization. 
 
@@ -336,7 +337,9 @@ val isEmptyField = ValidatorUtils.isEmptyField(textInputLayout, editText, emptyF
 val isFieldLongEnough= ValidatorUtils.isFieldLongEnough(textInputLayout, editText, length, fieldMessageString)
 ```
 
-## **8. Image Compression**
+## **~~8. Image Compression~~**
+
+**Important note:** This class has been *deprecated*. Please use *ImageHandler* class instead. In future release this class will be removed.
 
 ### **Description**
 
@@ -600,9 +603,71 @@ val encryptedPassword = password.encrypt()
 val decryptedPassword = password.decrypt()
 ```
 
-## **12. Bonus Stuff**
+## **12. Image Handler**
 
-### **12.1. Material Palette**
+### **Description**
+
+This tool helps you to compress images, saving compressed images and taking screenshots programatically. You only need to add the required permission to Android Manifest, and the class will handle the runtime permissions properly.
+
+|PUBLIC CONSTRUCTOR|DESCRIPTION|
+|:--:|:--:|
+|**ImageHandler** (*context*: Context, *screenShotListener*: ScreenShotHandlerCallback, *compressionListener*: ImageHandlerCallback)|Constructs the class that allows you to compress, save and take screenshots in an easy way.|
+
+**Public Methods**
+
+|Return type|Method name|Parameters|Description|
+|:---------:|:---------:|:--------:|:---------:|
+|Void|takeScreenShot|saveIt|Takes screenshot of current screen, and save it (if boolean is true)|
+|Void|compressImage|uri, desiredQuality|Compresses the image given as uri, and with desired quality.|
+|Void|compressImageSafe|uri, compressFormat|Compresses the image given as uri with given format.|
+|Void|getCompressorInstance|-|Return an instace of [Compressor](https://github.com/zetbaitsu/Compressor) to customize image compression.|
+
+**ImageHandlerCallback**
+
+In order to use this feature, you need to implement this callback wherever you need it.
+
+|Method | Parameters |Description|
+|:-----:|:----------:|:---------:|
+|onImageCompressed|image, fileSize, base64Image|When the compress process is done, this method is called.|
+|onImageCompressedError|error|If some exception is raised, this method is called|
+
+**ScreenShotHandlerCallback**
+
+Use this interface when you need to save screenshots. Note that it will raise an exception if you call *takeScreenshot* method and you didn't pass it in the constructor.
+
+|Method | Parameters |Description|
+|:-----:|:----------:|:---------:|
+|onScreenShotError|error|If there's any error, you can handle it in here|
+
+### **Usage**
+
+```kotlin
+class MyClass: ImageHandler.ImageHandlerCallback, ImageHandler.ScreenShotHandlerCallback{
+	
+	private val imageHandler= ImageCompression(context, this, this)
+	
+	//Compress a desired image
+	imageHandler.compressImage(uri) 
+
+	//Take screenshot
+	imageHandler.takeScreenShot()
+
+	override fun onImageCompressed(image: Bitmap, fileSize: String, base64Image: String) {
+		//Here we have our image compressed
+	}
+	override fun onImageCompressedError(error: Throwable) {
+		//We can handle errors in here
+	}
+	
+	override fun onScreenShotError(error: Throwable) {
+		//Exception was raised. 
+	}
+}
+```
+
+## **13. Bonus Stuff**
+
+### **13.1. Material Palette**
 
 #### **Description**
 
@@ -642,13 +707,13 @@ tvText.setColor(ContextCompat.getColor(context, R.color.md_grey_200))
 tvText.setColor(ContextCompat.getColor(context, R.color.md_blue_800))
 ```
 
-### **12.2. Usefull Extensions**
+### **13.2. Usefull Extensions**
 
-#### **12.2.1. Description**
+#### **13.2.1. Description**
 
 This library also provides many usefull extensions for the most commons tasks. Look at the table below to know what you can do.
 
-#### **12.2.2. Activity Extensions**
+#### **13.2.2. Activity Extensions**
 
 These extensions required an activity to be performed. You can use them to get metrics or to hide soft keyboard.
 
@@ -658,14 +723,14 @@ These extensions required an activity to be performed. You can use them to get m
 |Activity|windowHeight|-|Returns the height of the current screen|
 |Activity|windowWidth|-|Returns the width of the current screen|
 
-#### **12.2.2.1 . Usage**
+#### **13.2.2.1 . Usage**
 
 ```kotlin
 val myView = findViewById(R.id.view)
 activity.hideSoftKeyboard(myView )
 ```
 
-#### **12.2.3. Fragment Manager Extensions**
+#### **13.2.3. Fragment Manager Extensions**
 
 Are you tired of fragment transactions? Then, you may find these extensions very usefull. They simplify you code style in a very cool way.
 
@@ -677,7 +742,7 @@ Are you tired of fragment transactions? Then, you may find these extensions very
 
 **NOTE:** The parameters marked with (*) indicate that they're optional and you can call them only when needed.
 
-#### **12.2.3.1. Usage**
+#### **13.2.3.1. Usage**
 
 ```kotlin
 ...
@@ -691,7 +756,7 @@ fragmentManager.performFragmentTransaction(container, yourFragment, backStackTag
 fragmentManager.performFragmentTransaction(container, yourFragment, allowStateLoss = true)
 ```
 
-#### **12.2.4. View Extensions**
+#### **13.2.4. View Extensions**
 
 These extensions allow you to change the state of the views with one sinlge line of code per action. 
 
@@ -706,14 +771,14 @@ These extensions allow you to change the state of the views with one sinlge line
 |ViewGroup|setBackgroundColor|drawableResId|Inflates the view with the root attached to it|
 |ViewGroup|setBackgroundColor|drawableResId|Inflates the view with the root attached to it|
 
-#### **12.2.4.1. Usage**
+#### **13.2.4.1. Usage**
 ```kotlin
 ...
 view.gone()
 view.visible()
 ```
 
-#### **12.2.5. Another Extensions**
+#### **13.2.5. Another Extensions**
 
 Some other usefull extensions you can find here.
 
@@ -722,7 +787,7 @@ Some other usefull extensions you can find here.
 |ClosedRange|random|-|Generates a random number between the clsed range provided|
 |Drawable|changeDrawableColor|context, color|Changes the color of the drawable provided|
 
-#### **12.2.6. Image Loading**
+#### **13.2.6. Image Loading**
 
 Last but not least, there's an image loading extension, and it's a very powerful one. Below you can find every variation.
 
@@ -733,7 +798,7 @@ Last but not least, there's an image loading extension, and it's a very powerful
 |ImageView|loadCircularView|url, *placeholder**|Loads the url especified in the image provided with a circular border. **Placeholder** can be provided as well|
 |ImageView|loadCircularView|bitmap, *placeholder**|Loads the bitmap especified in the image provided with a circular border. **Placeholder** can be provided as well|
 
-#### **12.2.6.1. Usage**
+#### **13.2.6.1. Usage**
 
 ```kotlin
 //Loads the URL within myView and sets custom placeholder
@@ -742,7 +807,7 @@ myView.loadUrl(url, R.drawable.placeholder, R.drawable.error)
 myView.loadCircularView(bitmap)
 ```
 
-#### **12.2.7. Version Name & Version Code**
+#### **13.2.7. Version Name & Version Code**
 
 There's also an extension that you can use to get *VersionName* and *VersionCode* of your package. 
 
@@ -752,9 +817,10 @@ There's also an extension that you can use to get *VersionName* and *VersionCode
 
 **Note:** The *appVersion* parameter described above refers to **AppVersion** enum class. Youo can chose between *VersionCode* and *VersionName*
 
-#### **12.2.7.1. Usage**
+#### **13.2.7.1. Usage**
 
 ```kotlin
 val versionName = activity?.getAppVersion(AppVersion.VersionName)
 val versionCode = activity?.getAppVersion(AppVersion.VersionCode)
 tvVersion = String.format("Version %s", versionName)
+```
