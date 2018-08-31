@@ -71,7 +71,7 @@ You have multiple features within this library:
  
  [7. Validator Utils](https://github.com/knockmark10/KotlinCommons/wiki#7-validator-utils)
  
- [~~8. Image Compression~~](https://github.com/knockmark10/KotlinCommons/wiki#8-image-compression)
+ [~~8. Image Compression~~](https://github.com/knockmark10/KotlinCommons/wiki#deprecated-8-image-compression)
  
  [9. Fingerprint Authentication](https://github.com/knockmark10/KotlinCommons/wiki#9-fingerprint-authentication)
  
@@ -79,9 +79,9 @@ You have multiple features within this library:
 
  [11. Encryption](https://github.com/knockmark10/KotlinCommons/wiki#11-encryption)
  
- [12. ImageHandler](https://github.com/knockmark10/KotlinCommons/wiki#13-image-handler)
+ [12. ImageHandler](https://github.com/knockmark10/KotlinCommons/wiki#12-image-handler)
  
- [13. Bonus Stuff](https://github.com/knockmark10/KotlinCommons/wiki#12-bonus-stuff)
+ [13. Bonus Stuff](https://github.com/knockmark10/KotlinCommons/wiki#13-bonus-stuff)
 
 ## **1. Shared Preferences**
 
