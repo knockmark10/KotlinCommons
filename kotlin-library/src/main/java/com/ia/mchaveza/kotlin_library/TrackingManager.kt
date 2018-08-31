@@ -12,19 +12,28 @@ import com.google.android.gms.location.*
 import com.google.android.gms.location.LocationServices.getFusedLocationProviderClient
 
 
-class TrackingManager(private val mActivity: Activity) : LocationCallback(), PermissionCallback {
+class TrackingManager(private val mContext: Context) : LocationCallback(), PermissionCallback {
 
     private var userLatitude: Double = 0.0
     private var userLongitude: Double = 0.0
+    private var permissionManager: PermissionManager? = null
     private var mFusedClient: FusedLocationProviderClient? = null
     private val mLocationRequest by lazy { LocationRequest() }
-    private val permissionManager by lazy { PermissionManager(mActivity, this) }
 
     private var mListener: TrackingManagerLocationCallback? = null
 
     companion object {
         const val UPDATE_INTERVAL = (15 * 1000).toLong()
         const val FASTEST_INTERVAL = (10 * 1000).toLong()
+    }
+
+    /**
+     * Enables automatic runtime permission requests when permissions aren't granted.
+     * This will check is permission is added in manifest and if it was rejected or
+     * not. It is recommended that you call it for a better performance.
+     */
+    fun enablePermissionSetup(mAcivity: Activity) {
+        permissionManager = PermissionManager(mAcivity, this)
     }
 
     @Suppress("MissingPermission")
@@ -46,11 +55,11 @@ class TrackingManager(private val mActivity: Activity) : LocationCallback(), Per
         builder.addLocationRequest(mLocationRequest)
         val locationSettingsRequest = builder.build()
 
-        val settingsClient = LocationServices.getSettingsClient(mActivity)
+        val settingsClient = LocationServices.getSettingsClient(mContext)
         settingsClient.checkLocationSettings(locationSettingsRequest)
 
         if (checkLocationPermissions()) {
-            mFusedClient = getFusedLocationProviderClient(mActivity)
+            mFusedClient = getFusedLocationProviderClient(mContext)
             mFusedClient?.requestLocationUpdates(
                     mLocationRequest,
                     this,
@@ -67,7 +76,7 @@ class TrackingManager(private val mActivity: Activity) : LocationCallback(), Per
     @Suppress("MissingPermission")
     fun getLastLocation() {
         if (checkLocationPermissions()) {
-            val locationClient = getFusedLocationProviderClient(mActivity)
+            val locationClient = getFusedLocationProviderClient(mContext)
             locationClient.lastLocation
                     .addOnSuccessListener {
                         mListener?.onLocationHasChanged(it)
@@ -87,7 +96,7 @@ class TrackingManager(private val mActivity: Activity) : LocationCallback(), Per
     fun getLongitude(): Double = this.userLongitude
 
     fun areLocationServicesEnabled(): Boolean {
-        val locationManager = mActivity.getSystemService(Context.LOCATION_SERVICE) as LocationManager?
+        val locationManager = mContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager?
         val isGpsEnabled = locationManager?.isProviderEnabled(LocationManager.GPS_PROVIDER) ?: false
         val isNetworkAvailable = locationManager?.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
                 ?: false
@@ -96,7 +105,7 @@ class TrackingManager(private val mActivity: Activity) : LocationCallback(), Per
     }
 
     private fun checkLocationPermissions(): Boolean =
-            ContextCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+            ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
 
     override fun onLocationResult(locationResult: LocationResult) {
         super.onLocationResult(locationResult)
@@ -106,11 +115,13 @@ class TrackingManager(private val mActivity: Activity) : LocationCallback(), Per
     }
 
     private fun handleManifestPermissions() {
-        if (!permissionManager.checkManifestPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
-            throw SecurityException("Manifest permission missing. You need ACCESS_FINE_LOCATION and ACCESS_COARSE_LOCATION to use this feature.")
-        }
-        if (!permissionManager.permissionGranted(Manifest.permission.ACCESS_FINE_LOCATION)) {
-            permissionManager.requestSinglePermission(Manifest.permission.ACCESS_FINE_LOCATION)
+        permissionManager?.let {
+            if (!it.checkManifestPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
+                throw SecurityException("Manifest permission missing. You need ACCESS_FINE_LOCATION and ACCESS_COARSE_LOCATION to use this feature.")
+            }
+            if (!it.permissionGranted(Manifest.permission.ACCESS_FINE_LOCATION)) {
+                it.requestSinglePermission(Manifest.permission.ACCESS_FINE_LOCATION)
+            }
         }
     }
 
