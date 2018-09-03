@@ -64,6 +64,7 @@ class FingerPrintDialog : DialogFragment(), FingerPrintUtils.FingerPrintAuthCall
     }
 
     private fun restoreState() {
+        fingerPrintManager.startAuthProcess()
         Completable.timer(ERROR_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -71,7 +72,6 @@ class FingerPrintDialog : DialogFragment(), FingerPrintUtils.FingerPrintAuthCall
                     tvStatus?.text = statusMessage
                     tvStatus?.setTextColor(ContextCompat.getColor(activity!!, R.color.md_grey_400))
                     ivFingerPrint?.setImageResource(R.drawable.ic_sensor_fingerprint)
-                    fingerPrintManager.startAuthProcess()
                 }
     }
 
