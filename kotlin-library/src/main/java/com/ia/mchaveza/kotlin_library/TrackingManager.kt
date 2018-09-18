@@ -126,6 +126,7 @@ class TrackingManager(private val mContext: Context) : LocationCallback(), Permi
     }
 
     override fun onPermissionGranted(permission: String) {
+        startLocationUpdates(mListener!!)
     }
 
     override fun onPermissionDenied(permission: String) {
