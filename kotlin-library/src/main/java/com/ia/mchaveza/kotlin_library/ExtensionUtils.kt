@@ -30,6 +30,11 @@ import com.google.zxing.BarcodeFormat
 import com.google.zxing.MultiFormatWriter
 import com.google.zxing.WriterException
 import com.journeyapps.barcodescanner.BarcodeEncoder
+import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator
+import com.nostra13.universalimageloader.core.DisplayImageOptions
+import com.nostra13.universalimageloader.core.ImageLoader
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration
+import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer
 import se.simbio.encryption.Encryption
 import java.lang.Exception
 import java.util.*
@@ -168,6 +173,22 @@ fun ImageView.loadCircularView(url: String? = null, bitmap: Bitmap? = null, plac
             .apply(RequestOptions.skipMemoryCacheOf(true))
             .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.NONE))
             .into(this)
+}
+
+fun ImageView.roundCorners(url: String, cornerRadius: Int) {
+    val config = ImageLoaderConfiguration.Builder(context)
+            .diskCacheFileNameGenerator(HashCodeFileNameGenerator())
+            .build()
+
+    val options = DisplayImageOptions.Builder()
+            .displayer(RoundedBitmapDisplayer(cornerRadius))
+            .cacheInMemory(true)
+            .cacheOnDisk(true)
+            .build()
+
+    val imageLoader = ImageLoader.getInstance()
+    imageLoader.init(config)
+    imageLoader.displayImage(url, this, options)
 }
 
 fun ImageView.loadBarcode(string: String, barcodeFormat: BarcodeFormat, width: Int = 250, height: Int = 100) {

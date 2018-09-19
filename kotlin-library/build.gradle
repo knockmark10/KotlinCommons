@@ -48,6 +48,7 @@ dependencies {
     implementation "com.google.zxing:core:3.3.0"
     implementation "com.journeyapps:zxing-android-embedded:3.2.0@aar"
     implementation "com.github.simbiose:Encryption:2.0.1"
+    implementation "com.nostra13.universalimageloader:universal-image-loader:1.9.5"
 }
 repositories {
     mavenCentral()
