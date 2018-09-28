@@ -2,6 +2,8 @@ package com.ia.mchaveza.kotlin_library
 
 import android.content.Context
 import android.content.res.Resources
+import android.graphics.Color
+import android.support.annotation.ColorInt
 import android.util.Log
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -114,4 +116,23 @@ fun GoogleMap.centerMarkers(context: Context, latLngList: MutableList<LatLng>) {
 
     val cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, width, height, padding)
     this.animateCamera(cameraUpdate)
+}
+
+/**
+ *    Draws a circle within the map with the given parameters.
+ * You can define the color of the stroke, the color of the circle
+ *          itself and the width of the stroke.
+ */
+fun GoogleMap.drawCircle(location: LatLng,
+                         radius: Double,
+                         @ColorInt strokeColor: Int = Color.BLACK,
+                         @ColorInt fillColor: Int = 0x30ff0000,
+                         strokeWidth: Float = 2f): Circle {
+    val circleOptions = CircleOptions()
+    circleOptions.center(location)
+    circleOptions.radius(radius)
+    circleOptions.strokeColor(strokeColor)
+    circleOptions.fillColor(fillColor)
+    circleOptions.strokeWidth(strokeWidth)
+    return this.addCircle(circleOptions)
 }
