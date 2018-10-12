@@ -5,8 +5,10 @@ import android.content.res.Resources
 import android.graphics.Color
 import android.support.annotation.ColorInt
 import android.util.Log
+import android.view.View
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.*
 import com.ia.mchaveza.kotlin_library.MapsStyles.*
 
@@ -77,9 +79,14 @@ fun GoogleMap.setDaylightStyle(mContext: Context) {
 /**
  * Set the camera to desire position with custom zoom
  */
-fun GoogleMap.setCurrentPosition(position: LatLng, zoom: Int) {
-    val cameraPosition = CameraPosition.Builder().target(position).zoom(zoom.toFloat()).build()
+fun GoogleMap.setCurrentPosition(position: LatLng, zoom: Float) {
+    val cameraPosition = CameraPosition.Builder().target(position).zoom(zoom).build()
     this.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+}
+
+fun MapView.hideLocationButton() {
+    val locationButton = (this.findViewById<View>(Integer.parseInt("1")).parent as View).findViewById<View>(Integer.parseInt("2")) as View
+    locationButton.gone()
 }
 
 /**
