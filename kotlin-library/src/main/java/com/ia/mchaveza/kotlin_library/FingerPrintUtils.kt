@@ -10,7 +10,6 @@ import android.hardware.fingerprint.FingerprintManager
 import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
-import java.lang.NullPointerException
 import java.security.KeyStore
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
@@ -42,9 +41,9 @@ class FingerPrintUtils(private val mActivity: Activity,
     fun validateFingerPrint() {
         checkBasicListener()
         checkManifestPermission()
-        keyGuardManager = mActivity.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
-        fingerPrintManager = mActivity.getSystemService(Context.FINGERPRINT_SERVICE) as FingerprintManager
         if (checkFingerPrintSensor()) {
+            keyGuardManager = mActivity.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+            fingerPrintManager = mActivity.getSystemService(Context.FINGERPRINT_SERVICE) as FingerprintManager
             if (permissionManager.permissionGranted(android.Manifest.permission.USE_FINGERPRINT)) {
                 if (fingerPrintManager.hasEnrolledFingerprints()) {
                     if (keyGuardManager.isKeyguardSecure) {
