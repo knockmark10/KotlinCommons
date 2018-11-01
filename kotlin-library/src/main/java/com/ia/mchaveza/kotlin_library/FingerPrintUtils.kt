@@ -15,13 +15,13 @@ import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 
 class FingerPrintUtils(private val mActivity: Activity,
-                       private val mBasicListener: FingerPrintBasicCallback? = null,
-                       private val mAuthListener: FingerPrintAuthCallback? = null) :
-        PermissionCallback, FingerprintHelper.FingerPrintHelper {
+                       private var mBasicListener: FingerPrintBasicCallback? = null,
+                       private var mAuthListener: FingerPrintAuthCallback? = null
+) : PermissionCallback, FingerprintHelper.FingerPrintHelper {
 
     companion object {
         private const val ANDROID_KEYSTORE = "AndroidKeyStore"
-        private const val ORSAN_KEY = "FingerKey"
+        private const val FingerKey = "FingerKey"
     }
 
     private lateinit var cipher: Cipher
@@ -63,6 +63,20 @@ class FingerPrintUtils(private val mActivity: Activity,
     }
 
     /**
+     * Set the listener to get the validation output and handle proper errors
+     */
+    fun setOnValidateDeviceCompatibilityListener(listener: FingerPrintBasicCallback) {
+        mBasicListener = listener
+    }
+
+    /**
+     * Set the listener to get the authentication process output and handle proper errors
+     */
+    fun setOnAuthenticationProcessListener(listener: FingerPrintAuthCallback) {
+        mAuthListener = listener
+    }
+
+    /**
      * Call this method when you want to start scanning
      * your fingertip
      */
@@ -86,7 +100,7 @@ class FingerPrintUtils(private val mActivity: Activity,
             keyStore.load(null)
 
             val keyProperties = KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
-            val builder = KeyGenParameterSpec.Builder(ORSAN_KEY, keyProperties)
+            val builder = KeyGenParameterSpec.Builder(FingerKey, keyProperties)
                     .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
                     .setUserAuthenticationRequired(true)
                     .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
@@ -108,7 +122,7 @@ class FingerPrintUtils(private val mActivity: Activity,
                             + KeyProperties.BLOCK_MODE_CBC + "/"
                             + KeyProperties.ENCRYPTION_PADDING_PKCS7)
             keyStore.load(null)
-            val key = keyStore.getKey(ORSAN_KEY, null)
+            val key = keyStore.getKey(FingerKey, null)
             cipher.init(Cipher.ENCRYPT_MODE, key)
             true
         } catch (exception: Throwable) {

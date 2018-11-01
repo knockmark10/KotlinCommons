@@ -14,7 +14,6 @@ import android.widget.TextView
 import rx.Completable
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
-import java.lang.NullPointerException
 import java.util.concurrent.TimeUnit
 
 class FingerPrintDialog : DialogFragment(), FingerPrintUtils.FingerPrintAuthCallback {
