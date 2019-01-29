@@ -16,7 +16,9 @@ import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
 
-class FingerPrintDialog : DialogFragment(), FingerPrintUtils.FingerPrintAuthCallback {
+class FingerPrintDialog
+@Deprecated("Deprecated in favor of builder design pattern. Call Builder to set this property.")
+constructor() : DialogFragment(), FingerPrintUtils.FingerPrintAuthCallback {
 
     private var tvTitle: TextView? = null
     private var tvMessage: TextView? = null
@@ -24,10 +26,17 @@ class FingerPrintDialog : DialogFragment(), FingerPrintUtils.FingerPrintAuthCall
     private var ivFingerPrint: ImageView? = null
     private var btnCancel: TextView? = null
     private var btnChange: TextView? = null
-    private var icSuccess: Int = R.drawable.ic_success
-    private var icError: Int = R.drawable.ic_error
-    private var mListener: FingerPrintDialogCallback? = null
-    private var statusMessage: String = ""
+
+    private var titleEnabled: Boolean = true
+    private var title: String = "Autenticación"
+    private var errorIcon: Int = R.drawable.ic_error
+    private var cancelBtnMessage: String = "Cancelar"
+    private var statusMessage: String = "Toca sensor"
+    private var enableChangeMethodBtn: Boolean = true
+    private var buttonsColor: Int = R.color.md_red_700
+    private var successIcon: Int = R.drawable.ic_success
+    private var message: String = "Coloca tu huella para autenticarte"
+    private var mAuthenticationListener: FingerPrintDialogCallback? = null
 
     private lateinit var fingerPrintManager: FingerPrintUtils
 
@@ -41,25 +50,42 @@ class FingerPrintDialog : DialogFragment(), FingerPrintUtils.FingerPrintAuthCall
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val dialogView = LayoutInflater.from(activity!!).inflate(R.layout.dialog_fingerprint, null)
-        tvTitle = dialogView.findViewById(R.id.fingerprint_title)
-        tvMessage = dialogView.findViewById(R.id.fingerprint_instructions)
-        tvStatus = dialogView.findViewById(R.id.fingerprint_status)
-        ivFingerPrint = dialogView.findViewById(R.id.fingerprint_icon)
-        btnCancel = dialogView.findViewById(R.id.fingerprint_cancel)
-        btnChange = dialogView.findViewById(R.id.fingerprint_change_method)
+        val dialogView = container?.inflate(R.layout.dialog_fingerprint)
+        tvTitle = dialogView?.findViewById(R.id.fingerprint_title)
+        tvMessage = dialogView?.findViewById(R.id.fingerprint_instructions)
+        tvStatus = dialogView?.findViewById(R.id.fingerprint_status)
+        ivFingerPrint = dialogView?.findViewById(R.id.fingerprint_icon)
+        btnCancel = dialogView?.findViewById(R.id.fingerprint_cancel)
+        btnChange = dialogView?.findViewById(R.id.fingerprint_change_method)
         return dialogView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        checkListener()
-        statusMessage = getString(R.string.fingerprint_default_status)
-        btnCancel?.setOnClickListener(cancelAction)
-        btnChange?.setOnClickListener(changeAction)
-        mListener?.onSetupDialog()
+        setupDialog()
         fingerPrintManager = FingerPrintUtils(activity!!, mAuthListener = this)
         fingerPrintManager.startAuthProcess()
+    }
+
+    private fun setupDialog() {
+        this.tvTitle?.apply {
+            text = title
+            if (titleEnabled) {
+                visible()
+            } else {
+                gone()
+            }
+        }
+        this.tvMessage?.text = message
+        this.tvStatus?.text = statusMessage
+        this.btnCancel?.apply {
+            setTextColor(ContextCompat.getColor(activity!!, buttonsColor))
+            setOnClickListener(cancelAction)
+        }
+        this.btnChange?.apply {
+            setTextColor(ContextCompat.getColor(activity!!, buttonsColor))
+            setOnClickListener(changeAction)
+        }
     }
 
     private fun restoreState() {
@@ -77,7 +103,7 @@ class FingerPrintDialog : DialogFragment(), FingerPrintUtils.FingerPrintAuthCall
     private fun setError(error: String, isRecoverable: Boolean) {
         tvStatus?.text = error
         tvStatus?.setTextColor(ContextCompat.getColor(activity!!, R.color.md_red_700))
-        ivFingerPrint?.setImageResource(icError)
+        ivFingerPrint?.setImageResource(errorIcon)
         if (isRecoverable) {
             restoreState()
         } else {
@@ -87,20 +113,20 @@ class FingerPrintDialog : DialogFragment(), FingerPrintUtils.FingerPrintAuthCall
                     .subscribe {
                         fingerPrintManager.stopAuth()
                         dismiss()
-                        mListener?.onChangeMethod()
+                        mAuthenticationListener?.onChangeMethod()
                     }
         }
     }
 
     private val cancelAction = View.OnClickListener {
         fingerPrintManager.stopAuth()
-        mListener?.onDialogClosed()
+        mAuthenticationListener?.onDialogClosed()
         dismiss()
     }
 
     private val changeAction = View.OnClickListener {
         fingerPrintManager.stopAuth()
-        mListener?.onChangeMethod()
+        mAuthenticationListener?.onChangeMethod()
         dismiss()
     }
 
@@ -123,13 +149,13 @@ class FingerPrintDialog : DialogFragment(), FingerPrintUtils.FingerPrintAuthCall
     override fun onAuthenticationSucceeded(result: FingerprintManager.AuthenticationResult?) {
         tvStatus?.text = getString(R.string.fingerprint_auth_succeeded)
         tvStatus?.setTextColor(ContextCompat.getColor(activity!!, R.color.md_green_700))
-        ivFingerPrint?.setImageResource(icSuccess)
+        ivFingerPrint?.setImageResource(successIcon)
         Completable.timer(SUCCESS_DELAY_MILLIS, TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     dismiss()
-                    mListener?.onAuthenticationSucceeded()
+                    mAuthenticationListener?.onAuthenticationSucceeded()
                 }
     }
 
@@ -137,15 +163,10 @@ class FingerPrintDialog : DialogFragment(), FingerPrintUtils.FingerPrintAuthCall
         setError(errString.toString(), false)
     }
 
-    private fun checkListener() {
-        if (mListener == null) {
-            throw NullPointerException("FingerPrintDialogCallback interface required. You need to call setListener method.")
-        }
-    }
-
     /**
      * Specifies whether or not the title will be displayed
      */
+    @Deprecated("Deprecated in favor of builder design pattern. Call Builder to set this property.")
     fun titleEnabled(enabled: Boolean): FingerPrintDialog {
         if (enabled) {
             tvTitle?.visible()
@@ -158,6 +179,7 @@ class FingerPrintDialog : DialogFragment(), FingerPrintUtils.FingerPrintAuthCall
     /**
      * Set the title for your dialog
      */
+    @Deprecated("Deprecated in favor of builder design pattern. Call Builder to set this property.")
     fun title(title: String): FingerPrintDialog {
         if (title.isNotEmpty()) {
             tvTitle?.text = title
@@ -168,6 +190,7 @@ class FingerPrintDialog : DialogFragment(), FingerPrintUtils.FingerPrintAuthCall
     /**
      * Set the message to point out what's about to happen
      */
+    @Deprecated("Deprecated in favor of builder design pattern. Call Builder to set this property.")
     fun message(message: String): FingerPrintDialog {
         if (message.isNotEmpty()) {
             tvMessage?.text = message
@@ -178,6 +201,7 @@ class FingerPrintDialog : DialogFragment(), FingerPrintUtils.FingerPrintAuthCall
     /**
      * Set the message for the cancel button
      */
+    @Deprecated("Deprecated in favor of builder design pattern. Call Builder to set this property.")
     fun cancelButton(buttonMessage: String): FingerPrintDialog {
         if (buttonMessage.isNotEmpty()) {
             btnCancel?.text = buttonMessage
@@ -188,6 +212,7 @@ class FingerPrintDialog : DialogFragment(), FingerPrintUtils.FingerPrintAuthCall
     /**
      * If empty, change method button is enabled with default message
      */
+    @Deprecated("Deprecated in favor of builder design pattern. Call Builder to set this property.")
     fun changeMethodButton(buttonMessage: String = ""): FingerPrintDialog {
         btnChange?.visible()
         if (buttonMessage.isNotEmpty()) {
@@ -199,29 +224,33 @@ class FingerPrintDialog : DialogFragment(), FingerPrintUtils.FingerPrintAuthCall
     /**
      * Pick the success icon
      */
+    @Deprecated("Deprecated in favor of builder design pattern. Call Builder to set this property.")
     fun successIcon(@DrawableRes resId: Int): FingerPrintDialog {
-        icSuccess = resId
+        successIcon = resId
         return this
     }
 
     /**
      * Change error icon
      */
+    @Deprecated("Deprecated in favor of builder design pattern. Call Builder to set this property.")
     fun errorIcon(@DrawableRes resId: Int): FingerPrintDialog {
-        icError = resId
+        errorIcon = resId
         return this
     }
 
     /**
      * Set the listener to handle incoming messages
      */
+    @Deprecated("Deprecated in favor of builder design pattern. Call Builder to set this property.")
     fun setListener(listener: FingerPrintDialogCallback) {
-        mListener = listener
+        mAuthenticationListener = listener
     }
 
     /**
      * Set the default message
      */
+    @Deprecated("Deprecated in favor of builder design pattern. Call Builder to set this property.")
     fun defaultStatusMessage(statusMessage: String): FingerPrintDialog {
         if (statusMessage.isNotEmpty()) {
             this.statusMessage = statusMessage
@@ -233,17 +262,120 @@ class FingerPrintDialog : DialogFragment(), FingerPrintUtils.FingerPrintAuthCall
     /**
      * Set the buttons color
      */
+    @Deprecated("Deprecated in favor of builder design pattern. Call Builder to set this property.")
     fun buttonsColor(@ColorRes resId: Int) {
         btnChange?.setTextColor(ContextCompat.getColor(activity!!, resId))
         btnCancel?.setTextColor(ContextCompat.getColor(activity!!, resId))
     }
 
+    open inner class Builder {
+
+        private var title: String? = null
+        private var errorIcon: Int? = null
+        private var message: String? = null
+        private var successIcon: Int? = null
+        private var buttonsColor: Int? = null
+        private var statusMessage: String? = null
+        private var titleEnabled: Boolean? = null
+        private var cancelBtnMessage: String? = null
+        private var enableChangeMethodBtn: Boolean? = null
+        private var authenticationListener: FingerPrintDialogCallback? = null
+
+        fun setTitleEnabled(enabled: Boolean): Builder {
+            this.titleEnabled = enabled
+            return this
+        }
+
+        fun setDialogTitle(title: String): Builder {
+            this.title = title
+            return this
+        }
+
+        fun setMessage(message: String): Builder {
+            this.message = message
+            return this
+        }
+
+        fun setStatusMessage(message: String): Builder {
+            this.statusMessage = message
+            return this
+        }
+
+        fun setCancelButtonMessage(message: String): Builder {
+            this.cancelBtnMessage = message
+            return this
+        }
+
+        fun enableChangeMethodButton(enable: Boolean): Builder {
+            this.enableChangeMethodBtn = enable
+            return this
+        }
+
+        fun setSuccessIcon(@DrawableRes resId: Int): Builder {
+            this.successIcon = resId
+            return this
+        }
+
+        fun setErrorIcon(@DrawableRes resId: Int): Builder {
+            this.errorIcon = resId
+            return this
+        }
+
+        fun setAuthenticationListener(listener: FingerPrintDialogCallback): Builder {
+            this.authenticationListener = listener
+            return this
+        }
+
+        fun setButtonsColors(@ColorRes resId: Int): Builder {
+            this.buttonsColor = resId
+            return this
+        }
+
+        fun create(): FingerPrintDialog {
+            val fingerPrintDialog = FingerPrintDialog()
+            this.title?.let {
+                fingerPrintDialog.title = it
+            }
+            this.message?.let {
+                fingerPrintDialog.message = it
+            }
+            this.errorIcon?.let {
+                fingerPrintDialog.errorIcon = it
+            }
+            this.successIcon?.let {
+                fingerPrintDialog.successIcon = it
+            }
+            this.buttonsColor?.let {
+                fingerPrintDialog.buttonsColor = it
+            }
+            this.statusMessage?.let {
+                fingerPrintDialog.statusMessage = it
+            }
+            this.titleEnabled?.let {
+                fingerPrintDialog.titleEnabled = it
+            }
+            this.cancelBtnMessage?.let {
+                fingerPrintDialog.cancelBtnMessage = it
+            }
+            this.enableChangeMethodBtn?.let {
+                fingerPrintDialog.enableChangeMethodBtn = it
+            }
+            if (this.authenticationListener == null) {
+                throw NullPointerException("FingerPrintDialogCallback interface required. You need to call setListener method.")
+            } else {
+                fingerPrintDialog.mAuthenticationListener = this.authenticationListener
+            }
+            return fingerPrintDialog
+        }
+
+    }
 
     interface FingerPrintDialogCallback {
         fun onAuthenticationSucceeded()
         fun onChangeMethod()
-        fun onDialogClosed()
-        fun onSetupDialog()
+        fun onDialogClosed() {}
+        @Deprecated("Avoid using this method. Call Builder for customization.")
+        fun onSetupDialog() {}
     }
 
 }
