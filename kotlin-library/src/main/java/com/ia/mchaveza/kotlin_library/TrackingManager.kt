@@ -15,9 +15,13 @@ import com.google.android.gms.location.LocationServices.getFusedLocationProvider
 class TrackingManager(private val mContext: Context) : LocationCallback(), PermissionCallback {
 
     private var userLatitude: Double = 0.0
+
     private var userLongitude: Double = 0.0
+
     private var permissionManager: PermissionManager? = null
+
     private var mFusedClient: FusedLocationProviderClient? = null
+
     private val mLocationRequest by lazy { LocationRequest() }
 
     private var mListener: TrackingManagerLocationCallback? = null
