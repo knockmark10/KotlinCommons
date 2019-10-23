@@ -9,6 +9,8 @@ import android.os.Environment
 import android.text.format.DateFormat
 import android.util.Base64
 import android.view.View
+import com.android.permissionlibrary.callbacks.PermissionCallback
+import com.android.permissionlibrary.managers.PermissionManager
 import id.zelory.compressor.Compressor
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -16,7 +18,6 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.lang.NullPointerException
 import java.text.DecimalFormat
 import java.util.*
 
@@ -73,11 +74,11 @@ class ImageHandler(private val activity: Activity,
         this.quality = desiredQuality
         actualImage = FileUtils.from(activity, uri)
 
-        if (!permissionManager.checkManifestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+        if (!permissionManager.isPermissingPresentInManifest(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             throw SecurityException("Manifest permission missing. You need to declare WRITE_EXTERNAL_STORAGE permission in the manifest to use this feature.")
         }
 
-        if (permissionManager.permissionGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+        if (permissionManager.isPermissionGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             customCompressImage(actualImage, desiredQuality)
         } else {
             permissionManager.requestSinglePermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -119,7 +120,7 @@ class ImageHandler(private val activity: Activity,
     }
 
     private fun saveScreenShot() {
-        if (permissionManager.permissionGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+        if (permissionManager.isPermissionGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             saveImage()
         } else {
             permissionManager.requestSinglePermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)

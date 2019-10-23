@@ -10,6 +10,8 @@ import android.hardware.fingerprint.FingerprintManager
 import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
+import com.android.permissionlibrary.callbacks.PermissionCallback
+import com.android.permissionlibrary.managers.PermissionManager
 import java.security.KeyStore
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
@@ -44,7 +46,7 @@ class FingerPrintUtils(private val mActivity: Activity,
         if (checkFingerPrintSensor()) {
             keyGuardManager = mActivity.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
             fingerPrintManager = mActivity.getSystemService(Context.FINGERPRINT_SERVICE) as FingerprintManager
-            if (permissionManager.permissionGranted(android.Manifest.permission.USE_FINGERPRINT)) {
+            if (permissionManager.isPermissionGranted(android.Manifest.permission.USE_FINGERPRINT)) {
                 if (fingerPrintManager.hasEnrolledFingerprints()) {
                     if (keyGuardManager.isKeyguardSecure) {
                         mBasicListener?.onFingerPrintReady()
@@ -182,7 +184,7 @@ class FingerPrintUtils(private val mActivity: Activity,
     }
 
     private fun checkManifestPermission() {
-        if (!permissionManager.checkManifestPermission(Manifest.permission.USE_FINGERPRINT)) {
+        if (!permissionManager.isPermissingPresentInManifest(Manifest.permission.USE_FINGERPRINT)) {
             throw SecurityException("Manifest permission missing. You need USE_FINGERPRINT to use this feature.")
         }
     }
