@@ -39,8 +39,8 @@ dependencies {
     api 'com.google.android.gms:play-services-maps:16.0.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
     //Utils module
-    api 'com.github.knockmark10:TrackingManager:1.0.0'
-    api 'com.github.knockmark10:PermissionLibrary:1.0.0'
+    api 'com.github.knockmark10:TrackingManager:1.0.1'
+    api 'com.github.knockmark10:PermissionLibrary:1.0.1'
     //Others
     api 'com.squareup.okhttp3:okhttp-urlconnection:3.3.1'
     api 'id.zelory:compressor:2.1.0'
