@@ -9,7 +9,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 28
         versionCode 1
-        versionName "2.1.8"
+        versionName "2.2.0"
     }
 
     buildTypes {
@@ -41,6 +41,7 @@ dependencies {
     //Utils module
     api 'com.github.knockmark10:TrackingManager:1.0.2'
     api 'com.github.knockmark10:PermissionLibrary:1.0.3'
+    api 'com.github.knockmark10:FingerPrintLibrary:1.0.0'
     //Others
     api 'com.squareup.okhttp3:okhttp-urlconnection:3.3.1'
     api 'id.zelory:compressor:2.1.0'
